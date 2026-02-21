@@ -1,6 +1,7 @@
 package com.opus.service;
 
 import com.opus.entity.Product;
+import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,11 @@ public class ProductService {
 
 	public List<Product> getAllProducts() {
 		return productRepository.findAll();
+	}
+
+	public Product getProductById(Long id) {
+
+		return productRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 	}
 }
