@@ -1,5 +1,6 @@
 package com.opus.controller;
 
+import com.opus.dto.LoginRequest;
 import com.opus.dto.RegisterRequest;
 import com.opus.service.AuthService;
 import jakarta.validation.Valid;
@@ -19,5 +20,11 @@ public class AuthController {
 	public String register(@Valid @RequestBody RegisterRequest request) {
 
 		return authService.registerUser(request);
+	}
+
+	@PostMapping("/login")
+	public String login(@Valid @RequestBody LoginRequest request) {
+
+		return authService.login(request);
 	}
 }
