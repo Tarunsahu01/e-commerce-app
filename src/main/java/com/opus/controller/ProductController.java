@@ -8,6 +8,7 @@ import com.opus.service.ProductService;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,12 +23,14 @@ public class ProductController {
 		this.productService = productService;
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ProductResponse createProduct(@Valid @RequestBody ProductRequest request) {
 
 		return productService.createProduct(request);
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping
 	public List<Product> getAllProducts() {
 		return productService.getAllProducts();
@@ -38,12 +41,14 @@ public class ProductController {
 		return productService.getProductById(id);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ProductResponse updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest request) {
 
 		return productService.updateProduct(id, request);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
 
