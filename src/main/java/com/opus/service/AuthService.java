@@ -7,6 +7,7 @@ import com.opus.entity.User;
 import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.RoleRepository;
 import com.opus.repo.UserRepository;
+import com.opus.security.JwtUtil;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,12 +22,15 @@ public class AuthService {
 	private final RoleRepository roleRepository;
 	private final AuthenticationManager authenticationManager;
 	private final PasswordEncoder passwordEncoder;
+	private JwtUtil jwtUtil;
 
 	public AuthService(UserRepository userRepository, RoleRepository roleRepository,
-			AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+			AuthenticationManager authenticationManager, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.authenticationManager = authenticationManager;
+		this.jwtUtil = jwtUtil;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -49,9 +53,10 @@ public class AuthService {
 	}
 
 	public String login(LoginRequest request) {
-		Authentication authentication = authenticationManager
+
+		authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-		return "Login Successful";
+		return jwtUtil.generateToken(request.getEmail());
 	}
 }
