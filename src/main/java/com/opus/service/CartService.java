@@ -131,4 +131,18 @@ public class CartService {
 		cart.setTotalAmount(total);
 		cart.setUpdatedAt(java.time.LocalDateTime.now());
 	}
+
+	public Cart removeItemFromCart(Long productId) {
+
+		Cart cart = getOrCreateCart();
+
+		CartItem cartItem = cart.getCartItems().stream().filter(item -> item.getProduct().getId().equals(productId))
+				.findFirst().orElseThrow(() -> new ResourceNotFoundException("Product not found in cart"));
+
+		cart.getCartItems().remove(cartItem);
+
+		updateCartTotal(cart);
+
+		return cartRepository.save(cart);
+	}
 }
