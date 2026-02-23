@@ -1,6 +1,7 @@
 package com.opus.controller;
 
 import com.opus.dto.AddToCartRequest;
+import com.opus.dto.UpdateCartRequest;
 import com.opus.entity.Cart;
 import com.opus.service.CartService;
 
@@ -28,5 +29,12 @@ public class CartController {
 	public Cart addToCart(@RequestBody AddToCartRequest request) {
 
 		return cartService.addProductToCart(request);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@PutMapping("/update")
+	public Cart updateCart(@RequestBody UpdateCartRequest request) {
+
+		return cartService.updateCartItem(request);
 	}
 }

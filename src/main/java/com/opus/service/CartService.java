@@ -1,6 +1,7 @@
 package com.opus.service;
 
 import com.opus.dto.AddToCartRequest;
+import com.opus.dto.UpdateCartRequest;
 import com.opus.entity.Cart;
 import com.opus.entity.CartItem;
 import com.opus.entity.Product;
@@ -58,15 +59,26 @@ public class CartService {
 		Product product = productRepository.findById(request.getProductId())
 				.orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-		// Check if product already exists
 		CartItem existingItem = cart.getCartItems().stream()
 				.filter(item -> item.getProduct().getId().equals(product.getId())).findFirst().orElse(null);
 
 		if (existingItem != null) {
 
-			existingItem.setQuantity(existingItem.getQuantity() + request.getQuantity());
+			int newQuantity = existingItem.getQuantity() + request.getQuantity();
+
+			if (newQuantity > product.getQuantityAvailable()) {
+
+				throw new RuntimeException("Not enough stock available");
+			}
+
+			existingItem.setQuantity(newQuantity);
 
 		} else {
+
+			if (request.getQuantity() > product.getQuantityAvailable()) {
+
+				throw new RuntimeException("Not enough stock available");
+			}
 
 			CartItem cartItem = new CartItem();
 			cartItem.setCart(cart);
@@ -75,6 +87,35 @@ public class CartService {
 			cartItem.setPriceAtTime(product.getPrice());
 
 			cart.getCartItems().add(cartItem);
+		}
+
+		updateCartTotal(cart);
+
+		return cartRepository.save(cart);
+	}
+
+	public Cart updateCartItem(UpdateCartRequest request) {
+
+		Cart cart = getOrCreateCart();
+
+		CartItem cartItem = cart.getCartItems().stream()
+				.filter(item -> item.getProduct().getId().equals(request.getProductId())).findFirst()
+				.orElseThrow(() -> new ResourceNotFoundException("Product not found in cart"));
+
+		Product product = cartItem.getProduct();
+
+		if (request.getQuantity() > product.getQuantityAvailable()) {
+
+			throw new RuntimeException("Requested quantity exceeds stock");
+		}
+
+		if (request.getQuantity() == 0) {
+
+			cart.getCartItems().remove(cartItem);
+
+		} else {
+
+			cartItem.setQuantity(request.getQuantity());
 		}
 
 		updateCartTotal(cart);
