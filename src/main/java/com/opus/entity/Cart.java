@@ -28,6 +28,10 @@ public class Cart {
 	@OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CartItem> cartItems;
 
+	@ManyToOne
+	@JoinColumn(name = "coupon_id")
+	private Coupon appliedCoupon;
+
 	public Cart() {
 	}
 
@@ -79,5 +83,13 @@ public class Cart {
 
 	public void setCartItems(List<CartItem> cartItems) {
 		this.cartItems = cartItems;
+	}
+
+	public Coupon getAppliedCoupon() {
+		return appliedCoupon;
+	}
+
+	public void setAppliedCoupon(Coupon appliedCoupon) {
+		this.appliedCoupon = appliedCoupon;
 	}
 }
