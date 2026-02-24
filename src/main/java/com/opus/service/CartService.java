@@ -4,11 +4,13 @@ import com.opus.dto.AddToCartRequest;
 import com.opus.dto.UpdateCartRequest;
 import com.opus.entity.Cart;
 import com.opus.entity.CartItem;
+import com.opus.entity.Coupon;
 import com.opus.entity.Product;
 import com.opus.entity.User;
 import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.CartItemRepository;
 import com.opus.repo.CartRepository;
+import com.opus.repo.CouponRepository;
 import com.opus.repo.ProductRepository;
 import com.opus.repo.UserRepository;
 import com.opus.security.SecurityUtil;
@@ -23,14 +25,16 @@ public class CartService {
 	private UserRepository userRepository;
 	private ProductRepository productRepository;
 	private CartItemRepository cartItemRepository;
+	private CouponRepository couponRepository;
 
 	public CartService(CartRepository cartRepository, UserRepository userRepository,
-			ProductRepository productRepository, CartItemRepository cartItemRepository) {
-
+			ProductRepository productRepository, CartItemRepository cartItemRepository,
+			CouponRepository couponRepository) {
 		this.cartRepository = cartRepository;
 		this.userRepository = userRepository;
 		this.productRepository = productRepository;
 		this.cartItemRepository = cartItemRepository;
+		this.couponRepository = couponRepository;
 	}
 
 	public Cart getOrCreateCart() {
@@ -125,8 +129,23 @@ public class CartService {
 
 	private void updateCartTotal(Cart cart) {
 
-		double total = cart.getCartItems().stream().mapToDouble(item -> item.getPriceAtTime() * item.getQuantity())
-				.sum();
+		double total = 0.0;
+
+		Coupon coupon = cart.getAppliedCoupon();
+
+		for (CartItem item : cart.getCartItems()) {
+
+			double itemTotal = item.getPriceAtTime() * item.getQuantity();
+
+			if (coupon != null && item.getProduct().getCategory().getId().equals(coupon.getCategory().getId())) {
+
+				double discount = itemTotal * coupon.getDiscountPercentage() / 100;
+
+				itemTotal -= discount;
+			}
+
+			total += itemTotal;
+		}
 
 		cart.setTotalAmount(total);
 		cart.setUpdatedAt(java.time.LocalDateTime.now());
@@ -140,6 +159,31 @@ public class CartService {
 				.findFirst().orElseThrow(() -> new ResourceNotFoundException("Product not found in cart"));
 
 		cart.getCartItems().remove(cartItem);
+
+		updateCartTotal(cart);
+
+		return cartRepository.save(cart);
+	}
+
+	public Cart applyCoupon(String couponCode) {
+
+		Cart cart = getOrCreateCart();
+
+		Coupon coupon = couponRepository.findByCode(couponCode)
+				.orElseThrow(() -> new ResourceNotFoundException("Invalid coupon code"));
+
+		// Active check
+		if (!coupon.isActive()) {
+			throw new RuntimeException("Coupon is inactive");
+		}
+
+		// Expiry check
+		if (coupon.getExpiryDate().isBefore(java.time.LocalDate.now())) {
+
+			throw new RuntimeException("Coupon expired");
+		}
+
+		cart.setAppliedCoupon(coupon);
 
 		updateCartTotal(cart);
 
