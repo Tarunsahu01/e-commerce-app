@@ -1,6 +1,7 @@
 package com.opus.controller;
 
 import com.opus.dto.AddToCartRequest;
+import com.opus.dto.ApplyCouponRequest;
 import com.opus.dto.UpdateCartRequest;
 import com.opus.entity.Cart;
 import com.opus.service.CartService;
@@ -43,5 +44,12 @@ public class CartController {
 	public Cart removeItem(@PathVariable Long productId) {
 
 		return cartService.removeItemFromCart(productId);
+	}
+
+	@PreAuthorize("hasRole('USER')")
+	@PostMapping("/apply-coupon")
+	public Cart applyCoupon(@RequestBody ApplyCouponRequest request) {
+
+		return cartService.applyCoupon(request.getCouponCode());
 	}
 }
