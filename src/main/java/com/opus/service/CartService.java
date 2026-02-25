@@ -1,6 +1,8 @@
 package com.opus.service;
 
 import com.opus.dto.AddToCartRequest;
+import com.opus.dto.CheckoutItem;
+import com.opus.dto.CheckoutResponse;
 import com.opus.dto.UpdateCartRequest;
 import com.opus.entity.Cart;
 import com.opus.entity.CartItem;
@@ -17,6 +19,7 @@ import com.opus.security.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CartService {
@@ -93,6 +96,7 @@ public class CartService {
 			cart.getCartItems().add(cartItem);
 		}
 
+		validateAppliedCoupon(cart);
 		updateCartTotal(cart);
 
 		return cartRepository.save(cart);
@@ -122,6 +126,7 @@ public class CartService {
 			cartItem.setQuantity(request.getQuantity());
 		}
 
+		validateAppliedCoupon(cart);
 		updateCartTotal(cart);
 
 		return cartRepository.save(cart);
@@ -172,12 +177,10 @@ public class CartService {
 		Coupon coupon = couponRepository.findByCode(couponCode)
 				.orElseThrow(() -> new ResourceNotFoundException("Invalid coupon code"));
 
-		// Active check
 		if (!coupon.isActive()) {
 			throw new RuntimeException("Coupon is inactive");
 		}
 
-		// Expiry check
 		if (coupon.getExpiryDate().isBefore(java.time.LocalDate.now())) {
 
 			throw new RuntimeException("Coupon expired");
@@ -185,8 +188,82 @@ public class CartService {
 
 		cart.setAppliedCoupon(coupon);
 
+		validateAppliedCoupon(cart);
 		updateCartTotal(cart);
 
 		return cartRepository.save(cart);
+	}
+
+	public Cart removeCoupon() {
+
+		Cart cart = getOrCreateCart();
+
+		if (cart.getAppliedCoupon() == null) {
+			throw new RuntimeException("No coupon applied");
+		}
+
+		cart.setAppliedCoupon(null);
+
+		updateCartTotal(cart);
+
+		return cartRepository.save(cart);
+	}
+
+	private void validateAppliedCoupon(Cart cart) {
+
+		Coupon coupon = cart.getAppliedCoupon();
+
+		if (coupon == null)
+			return;
+
+		boolean categoryExists = cart.getCartItems().stream()
+				.anyMatch(item -> item.getProduct().getCategory().getId().equals(coupon.getCategory().getId()));
+
+		if (!categoryExists) {
+			cart.setAppliedCoupon(null);
+		}
+	}
+
+	public CheckoutResponse checkout() {
+
+		Cart cart = getOrCreateCart();
+
+		if (cart.getCartItems().isEmpty()) {
+			throw new RuntimeException("Cart is empty");
+		}
+
+		// HARD STOCK VALIDATION
+		for (CartItem item : cart.getCartItems()) {
+
+			if (item.getQuantity() > item.getProduct().getQuantityAvailable()) {
+
+				throw new RuntimeException("Insufficient stock for product: " + item.getProduct().getName());
+			}
+		}
+
+		CheckoutResponse response = new CheckoutResponse();
+
+		List<CheckoutItem> items = cart.getCartItems().stream().map(item -> {
+
+			CheckoutItem dto = new CheckoutItem();
+
+			dto.setProductName(item.getProduct().getName());
+			dto.setQuantity(item.getQuantity());
+			dto.setPrice(item.getPriceAtTime());
+
+			dto.setSubtotal(item.getPriceAtTime() * item.getQuantity());
+
+			return dto;
+		}).toList();
+
+		response.setItems(items);
+
+		if (cart.getAppliedCoupon() != null) {
+			response.setAppliedCoupon(cart.getAppliedCoupon().getCode());
+		}
+
+		response.setTotalAmount(cart.getTotalAmount());
+
+		return response;
 	}
 }
