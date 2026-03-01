@@ -1,5 +1,6 @@
 package com.opus.controller;
 
+import com.opus.dto.MeResponse;
 import com.opus.dto.LoginRequest;
 import com.opus.dto.RegisterRequest;
 import com.opus.service.AuthService;
@@ -26,5 +27,10 @@ public class AuthController {
 	public String login(@Valid @RequestBody LoginRequest request) {
 
 		return authService.login(request);
+	}
+
+	@GetMapping("/me")
+	public MeResponse me() {
+		return authService.getCurrentUser();
 	}
 }
