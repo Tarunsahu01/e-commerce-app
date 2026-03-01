@@ -30,7 +30,6 @@ public class ProductController {
 		return productService.createProduct(request);
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@GetMapping
 	public List<Product> getAllProducts() {
 		return productService.getAllProducts();

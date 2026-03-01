@@ -15,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 
@@ -30,31 +32,29 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
 
-		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
+				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
 
-				// Public APIs
-				.requestMatchers("/api/auth/**").permitAll()
+				.requestMatchers("/api/products/**").hasRole("ADMIN").requestMatchers("/api/categories/**")
+				.hasRole("ADMIN")
 
-				// ADMIN APIs
-				.requestMatchers("/api/products/**", "/api/categories/**").hasRole("ADMIN")
-
-				// Remaining APIs require login
 				.anyRequest().authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
 
 	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("*"));
-		configuration.setAllowCredentials(true);
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+
+				registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("*")
+						.allowedHeaders("*");
+			}
+		};
 	}
 
 	@Bean
