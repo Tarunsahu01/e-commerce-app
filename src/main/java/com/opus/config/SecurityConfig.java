@@ -30,6 +30,7 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
 
 				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
+				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories/**").permitAll()
 
 				.requestMatchers("/api/products/**").hasRole("ADMIN").requestMatchers("/api/categories/**")
 				.hasRole("ADMIN")
