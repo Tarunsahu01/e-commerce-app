@@ -11,5 +11,7 @@ public class ECommerceAppApplication {
 		
 		System.out.println("HASHED PASSWORD: " + new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("Admin@123"));
 	}
+	
+	
 
 }
