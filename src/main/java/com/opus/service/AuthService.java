@@ -1,6 +1,5 @@
 package com.opus.service;
 
-import com.opus.dto.MeResponse;
 import com.opus.dto.LoginRequest;
 import com.opus.dto.RegisterRequest;
 import com.opus.entity.Role;
@@ -9,9 +8,7 @@ import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.RoleRepository;
 import com.opus.repo.UserRepository;
 import com.opus.security.JwtUtil;
-import com.opus.security.SecurityUtil;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +38,7 @@ public class AuthService {
 			throw new RuntimeException("Email already registered");
 		}
 
-		Role userRole = roleRepository.findByName("USER")
+		Role userRole = roleRepository.findByName("ROLE_USER")
 				.orElseThrow(() -> new ResourceNotFoundException("Role USER not found"));
 
 		User user = new User();
@@ -60,12 +57,5 @@ public class AuthService {
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
 		return jwtUtil.generateToken(request.getEmail());
-	}
-
-	public MeResponse getCurrentUser() {
-		String email = SecurityUtil.getCurrentUsername();
-		User user = userRepository.findByEmail(email)
-				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
-		return new MeResponse(user.getName(), user.getEmail(), user.getRole().getName());
 	}
 }
