@@ -1,14 +1,14 @@
 /**
  * ProductCard: Reusable card for a single product.
- * Shows image, name, price, and Add to Cart button.
+ * Shows image, name, price, and Add to Cart button (or Edit Product in admin mode).
  * Add to Cart calls backend POST /api/cart/add when user is logged in.
  */
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 
-export function ProductCard({ product }) {
+export function ProductCard({ product, adminMode }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
@@ -33,6 +33,41 @@ export function ProductCard({ product }) {
       setAdding(false);
     }
   };
+
+  if (adminMode) {
+    return (
+      <article
+        className="flex-shrink-0 w-[180px] sm:w-[200px] bg-white border border-gray-200 rounded-md overflow-hidden hover:border-gray-300 transition-colors"
+        data-product-id={id}
+      >
+        <div className="aspect-square bg-gray-100 flex items-center justify-center">
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={name || 'Product'}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-gray-400 text-xs">No Image</span>
+          )}
+        </div>
+        <div className="p-3">
+          <h3 className="text-sm font-medium text-black truncate" title={name}>
+            {name || 'Unnamed product'}
+          </h3>
+          <p className="mt-1 text-sm font-medium text-black">{displayPrice}</p>
+          <div className="mt-2 flex justify-center">
+            <Link
+              to={`/admin-dashboard/edit-product/${id}`}
+              className="block w-full text-center text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors"
+            >
+              Edit Product
+            </Link>
+          </div>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article

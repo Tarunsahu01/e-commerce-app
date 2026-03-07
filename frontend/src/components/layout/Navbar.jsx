@@ -23,7 +23,7 @@ export function Navbar() {
   const [username, setUsername] = useState('');
   const menuRef = useRef(null);
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || localStorage.getItem('role') === 'admin';
 
   const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
 
@@ -157,7 +157,7 @@ export function Navbar() {
 
                     {isAdmin && (
                       <Link
-                        to="/admin"
+                        to="/admin-dashboard"
                         className="block px-4 py-2 text-sm text-black hover:bg-gray-100"
                         onClick={() => setOpen(false)}
                       >

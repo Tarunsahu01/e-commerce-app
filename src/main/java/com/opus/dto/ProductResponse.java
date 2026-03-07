@@ -8,6 +8,7 @@ public class ProductResponse {
     private Double price;
     private Integer quantityAvailable;
     private String categoryName;
+    private String imageUrl;
 
     public ProductResponse() {}
 
@@ -73,5 +74,13 @@ public class ProductResponse {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
