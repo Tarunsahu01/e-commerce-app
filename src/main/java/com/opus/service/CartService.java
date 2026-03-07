@@ -60,6 +60,10 @@ public class CartService {
 	}
 
 	public Cart addProductToCart(AddToCartRequest request) {
+		
+		if (request.getQuantity() <= 0) {
+	        throw new RuntimeException("Quantity must be greater than zero");
+	    }
 
 		Cart cart = getOrCreateCart();
 
@@ -103,6 +107,10 @@ public class CartService {
 	}
 
 	public Cart updateCartItem(UpdateCartRequest request) {
+		
+		if (request.getQuantity() < 0) {
+	        throw new RuntimeException("Quantity cannot be negative");
+	    }
 
 		Cart cart = getOrCreateCart();
 

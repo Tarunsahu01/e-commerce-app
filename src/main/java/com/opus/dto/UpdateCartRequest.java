@@ -8,7 +8,7 @@ public class UpdateCartRequest {
 	@NotNull
 	private Long productId;
 
-	@Min(0)
+	@Min(1)
 	private Integer quantity;
 
 	public UpdateCartRequest() {
