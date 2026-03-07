@@ -38,7 +38,7 @@ public class AuthService {
 			throw new RuntimeException("Email already registered");
 		}
 
-		Role userRole = roleRepository.findByName("ROLE_USER")
+		Role userRole = roleRepository.findByName("USER")
 				.orElseThrow(() -> new ResourceNotFoundException("Role USER not found"));
 
 		User user = new User();
