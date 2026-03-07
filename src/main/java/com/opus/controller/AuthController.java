@@ -1,9 +1,11 @@
 package com.opus.controller;
 
 import com.opus.dto.LoginRequest;
+import com.opus.dto.MeResponse;
 import com.opus.dto.RegisterRequest;
 import com.opus.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,5 +28,11 @@ public class AuthController {
 	public String login(@Valid @RequestBody LoginRequest request) {
 
 		return authService.login(request);
+	}
+
+	@GetMapping("/me")
+	public MeResponse me(Authentication authentication) {
+		String email = authentication != null ? authentication.getName() : null;
+		return authService.getCurrentUser(email);
 	}
 }
