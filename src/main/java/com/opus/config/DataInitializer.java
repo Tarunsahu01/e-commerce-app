@@ -31,6 +31,7 @@ public class DataInitializer implements CommandLineRunner {
 	public void run(String... args) {
 		seedCategories();
 		seedProducts();
+		seedRoles();
 	}
 
 	private void seedRoles() {

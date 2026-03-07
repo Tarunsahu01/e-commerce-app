@@ -88,6 +88,15 @@ public class Product {
 		return category;
 	}
 
+	public String getCategoryName() {
+		return category != null ? category.getName() : null;
+	}
+
+	/** Exposes category id for API responses (e.g. cart) so coupons can be fetched by category. */
+	public Long getCategoryId() {
+		return category != null ? category.getId() : null;
+	}
+
 	public void setCategory(Category category) {
 		this.category = category;
 	}

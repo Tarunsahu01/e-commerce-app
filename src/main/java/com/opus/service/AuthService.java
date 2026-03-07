@@ -1,6 +1,7 @@
 package com.opus.service;
 
 import com.opus.dto.LoginRequest;
+import com.opus.dto.MeResponse;
 import com.opus.dto.RegisterRequest;
 import com.opus.entity.Role;
 import com.opus.entity.User;
@@ -57,5 +58,12 @@ public class AuthService {
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
 		return jwtUtil.generateToken(request.getEmail());
+	}
+
+	public MeResponse getCurrentUser(String email) {
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		String roleName = user.getRole() != null ? user.getRole().getName() : "USER";
+		return new MeResponse(user.getName(), user.getEmail(), roleName);
 	}
 }
