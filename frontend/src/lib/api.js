@@ -38,6 +38,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('role');
       // Dispatch custom event for AuthContext to react (avoids circular import)
       window.dispatchEvent(new CustomEvent('auth:logout'));
     }

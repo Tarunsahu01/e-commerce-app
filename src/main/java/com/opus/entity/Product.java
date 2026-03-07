@@ -23,6 +23,8 @@ public class Product {
 	@Column(name = "quantity_available")
 	private Integer quantityAvailable;
 
+	private String imageUrl;
+
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	@JsonBackReference
@@ -82,6 +84,14 @@ public class Product {
 
 	public void setQuantityAvailable(Integer quantityAvailable) {
 		this.quantityAvailable = quantityAvailable;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public Category getCategory() {
