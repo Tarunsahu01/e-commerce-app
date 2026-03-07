@@ -1,13 +1,14 @@
 package com.opus.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.opus.dto.CategoryRequest;
 import com.opus.dto.CategoryResponse;
 import com.opus.entity.Category;
 import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.CategoryRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CategoryService {

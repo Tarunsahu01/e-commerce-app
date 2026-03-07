@@ -1,9 +1,12 @@
 package com.opus.service;
 
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.opus.dto.ApplicableCouponsRequest;
 import com.opus.dto.CouponRequest;
 import com.opus.dto.CouponResponse;
 import com.opus.entity.Category;
@@ -11,6 +14,9 @@ import com.opus.entity.Coupon;
 import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.CategoryRepository;
 import com.opus.repo.CouponRepository;
+
+
+
 
 @Service
 public class CouponService {
@@ -43,6 +49,19 @@ public class CouponService {
 	public List<CouponResponse> getAllCoupons() {
 
 		return couponRepository.findAll().stream().map(this::mapToResponse).toList();
+	}
+
+	public List<CouponResponse> getApplicableCoupons(ApplicableCouponsRequest request) {
+		List<Long> categoryIds = request != null ? request.getCategories() : null;
+		if (categoryIds == null || categoryIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+		LocalDate today = LocalDate.now();
+		return couponRepository
+				.findByCategory_IdInAndActiveTrueAndExpiryDateGreaterThanEqual(categoryIds, today)
+				.stream()
+				.map(this::mapToResponse)
+				.toList();
 	}
 
 	private CouponResponse mapToResponse(Coupon coupon) {
