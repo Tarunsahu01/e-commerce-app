@@ -7,23 +7,48 @@
  *
  * IF LOGGED IN:
  * - Cart button with item count badge
- * - Login replaced by Hamburger menu with "Welcome! {name}", Admin link, Logout.
+ * - User menu: fetches profile from backend and shows "Welcome! {username}".
  */
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { api } from '../../lib/api';
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [username, setUsername] = useState('');
   const menuRef = useRef(null);
 
   const isAdmin = user?.role === 'ADMIN';
 
   const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
+
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setUsername('');
+      return;
+    }
+    try {
+      const { data } = await api.get('/auth/me');
+      setUsername(data?.name ?? '');
+    } catch (error) {
+      console.error('Failed to fetch user profile', error);
+      setUsername('');
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserProfile();
+    } else {
+      setUsername('');
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -120,10 +145,14 @@ export function Navbar() {
                 {open && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-xs text-gray-600">Welcome!</p>
-                      <p className="text-sm font-medium text-black truncate">
-                        {user?.name ?? 'User'}
-                      </p>
+                      {username && (
+                        <>
+                          <p className="text-xs text-gray-600">Welcome!</p>
+                          <p className="text-sm font-medium text-black truncate">
+                            {username}
+                          </p>
+                        </>
+                      )}
                     </div>
 
                     {isAdmin && (

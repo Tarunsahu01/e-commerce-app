@@ -1,5 +1,9 @@
 package com.opus.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.opus.dto.ProductRequest;
 import com.opus.dto.ProductResponse;
 import com.opus.entity.Category;
@@ -7,9 +11,6 @@ import com.opus.entity.Product;
 import com.opus.exception.ResourceNotFoundException;
 import com.opus.repo.CategoryRepository;
 import com.opus.repo.ProductRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ProductService {
