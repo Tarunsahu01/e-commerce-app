@@ -23,7 +23,7 @@ export function RegisterPage() {
       await api.post('/auth/register', { name, email, password });
       const { data } = await api.post('/auth/login', { email, password });
       const token = typeof data === 'string' ? data : data?.token;
-      if (token) await login(token);
+      if (token) await login(token, { name, email, role: 'USER' });
       navigate('/', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message ?? err.message ?? 'Registration failed');
