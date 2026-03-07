@@ -41,3 +41,39 @@ This file records project checkpoints used as baselines before new feature chang
 - **Footer:** Stable. Black background, gray text, E-Shop link, Contact, copyright. Styles: `bg-black text-gray-300`, `max-w-7xl`.
 
 **No UI changes were made during this checkpoint.** This checkpoint is the baseline for the Product Suggestion Carousel feature.
+
+---
+
+## Checkpoint 4 – Pre-Admin System
+
+**Date:** Baseline before Admin System implementation  
+**Purpose:** Stable state with cart, coupons, and user flows before adding Admin Dashboard and product/coupon management.
+
+### Current working pages
+
+| Route     | Page        | Status  |
+|----------|-------------|---------|
+| `/`      | HomePage    | Working |
+| `/cart`  | CartPage    | Working |
+| `/payment` | PaymentPage | Working |
+| `/login` | LoginPage   | Working |
+| `/register` | RegisterPage | Working |
+
+### Features at this checkpoint
+
+- User authentication (JWT, login/register)
+- Product listing with category carousels
+- Cart (add, update, remove, checkout)
+- Coupon application on cart
+- Payment page
+
+### Backend APIs (unchanged)
+
+- Auth: `/auth/login`, `/auth/register`, `/auth/me`
+- Products: GET `/products`, GET `/products/:id` (public); POST/PUT/DELETE (ADMIN)
+- Categories: GET/POST (ADMIN for POST)
+- Coupons: POST `/coupons` (ADMIN), GET `/coupons`, POST `/coupons/applicable`
+- Cart: USER-only endpoints
+
+**No breaking changes to user functionality after this checkpoint.** Admin system is added in a separate layer with route protection and role-based UI.
+
