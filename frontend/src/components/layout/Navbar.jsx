@@ -6,20 +6,24 @@
  * - Login button
  *
  * IF LOGGED IN:
- * - Cart button stays
- * - Login replaced by Hamburger menu with dropdown (name, email, Admin link, Logout).
+ * - Cart button with item count badge
+ * - Login replaced by Hamburger menu with "Welcome! {name}", Admin link, Logout.
  */
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
+  const { cartItems } = useCart();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
   const isAdmin = user?.role === 'ADMIN';
+
+  const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity ?? 1), 0);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -54,7 +58,6 @@ export function Navbar() {
           </Link>
 
           <div className="flex items-center gap-2" ref={menuRef}>
-            {/* Cart button (always visible). Currently navigates to /cart, which redirects to home. */}
             <Link
               to="/cart"
               className="relative p-2 rounded-md text-black hover:bg-gray-100 transition-colors"
@@ -70,9 +73,17 @@ export function Navbar() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
+              {cartCount > 0 && (
+                <span
+                  className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 rounded-full bg-red-600 text-white text-xs font-medium"
+                  aria-label={`${cartCount} items in cart`}
+                >
+                  {cartCount > 99 ? '99+' : cartCount}
+                </span>
+              )}
             </Link>
 
             {!isAuthenticated ? (
@@ -109,11 +120,9 @@ export function Navbar() {
                 {open && (
                   <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-xs text-gray-600">Welcome!</p>
                       <p className="text-sm font-medium text-black truncate">
                         {user?.name ?? 'User'}
-                      </p>
-                      <p className="mt-0.5 text-xs text-gray-600 truncate">
-                        {user?.email}
                       </p>
                     </div>
 
