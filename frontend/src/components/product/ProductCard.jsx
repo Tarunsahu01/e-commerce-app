@@ -1,11 +1,30 @@
 /**
  * ProductCard: Reusable card for a single product.
- * Shows image (or placeholder), name, price, and a static rating placeholder.
- * Styling matches app theme: black/gray, borders, rounded-md.
+ * Shows image, name, price, and Add to Cart button.
  */
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
+
+const isLoggedIn = () => {
+  return localStorage.getItem('user') !== null;
+};
+
 export function ProductCard({ product }) {
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const { id, name, price, imageUrl } = product ?? {};
   const displayPrice = price != null ? `₹${Number(price).toLocaleString('en-IN')}` : '—';
+
+  const handleAddToCart = () => {
+    if (!isLoggedIn()) {
+      alert('You need to sign in first.');
+      navigate('/login');
+      return;
+    }
+
+    addToCart(product);
+    alert('This item has been added to the cart.');
+  };
 
   return (
     <article
@@ -28,7 +47,15 @@ export function ProductCard({ product }) {
           {name || 'Unnamed product'}
         </h3>
         <p className="mt-1 text-sm font-medium text-black">{displayPrice}</p>
-        <p className="mt-0.5 text-xs text-gray-500">★★★★☆ 4.0</p>
+        <div className="mt-2 flex justify-center">
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="w-full text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors"
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
     </article>
   );
