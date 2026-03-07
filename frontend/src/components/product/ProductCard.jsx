@@ -1,29 +1,37 @@
 /**
  * ProductCard: Reusable card for a single product.
  * Shows image, name, price, and Add to Cart button.
+ * Add to Cart calls backend POST /api/cart/add when user is logged in.
  */
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-
-const isLoggedIn = () => {
-  return localStorage.getItem('user') !== null;
-};
 
 export function ProductCard({ product }) {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
+  const [adding, setAdding] = useState(false);
   const { id, name, price, imageUrl } = product ?? {};
   const displayPrice = price != null ? `₹${Number(price).toLocaleString('en-IN')}` : '—';
 
-  const handleAddToCart = () => {
-    if (!isLoggedIn()) {
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
       alert('You need to sign in first.');
       navigate('/login');
       return;
     }
 
-    addToCart(product);
-    alert('This item has been added to the cart.');
+    setAdding(true);
+    try {
+      await addToCart(product);
+      alert('This item has been added to the cart.');
+    } catch {
+      alert('Failed to add to cart. Please try again.');
+    } finally {
+      setAdding(false);
+    }
   };
 
   return (
@@ -51,9 +59,10 @@ export function ProductCard({ product }) {
           <button
             type="button"
             onClick={handleAddToCart}
-            className="w-full text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors"
+            disabled={adding}
+            className="w-full text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors disabled:opacity-50"
           >
-            Add to Cart
+            {adding ? 'Adding…' : 'Add to Cart'}
           </button>
         </div>
       </div>

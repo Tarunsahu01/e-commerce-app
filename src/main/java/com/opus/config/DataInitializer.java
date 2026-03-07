@@ -1,15 +1,16 @@
 package com.opus.config;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
 import com.opus.entity.Category;
 import com.opus.entity.Product;
 import com.opus.repo.CategoryRepository;
 import com.opus.repo.ProductRepository;
 import com.opus.repo.RoleRepository;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
