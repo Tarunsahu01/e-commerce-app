@@ -16,7 +16,10 @@ const CartContext = createContext(null);
  */
 function cartResponseToItems(cart) {
   if (!cart?.cartItems || !Array.isArray(cart.cartItems)) return [];
+  console.log(cart.id);
+  
   return cart.cartItems.map((ci) => ({
+    
     id: ci.product?.id,
     productId: ci.product?.id,
     title: ci.product?.name ?? 'Product',
@@ -167,6 +170,10 @@ export function CartProvider({ children }) {
       console.error('Remove coupon failed', err);
       throw err;
     }
+  }, [setCartFromResponse]);
+
+  const checkoutForCart = useCallback(async () => {
+    // complete this method
   }, [setCartFromResponse]);
 
   const value = {
