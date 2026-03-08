@@ -31,18 +31,9 @@ public class DataInitializer implements CommandLineRunner {
 	public void run(String... args) {
 		seedCategories();
 		seedProducts();
-		seedRoles();
 	}
 
-	private void seedRoles() {
-		if (roleRepository.count() > 0) {
-			return;
-		}
 
-		List<Role> roles = Arrays.asList(new Role(1L, "USER"), new Role(2L, "ADMIN"));
-
-		roleRepository.saveAll(roles);
-	}
 
 	private void seedCategories() {
 		if (categoryRepository.count() > 0) {
