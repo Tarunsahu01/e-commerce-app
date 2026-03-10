@@ -43,6 +43,9 @@ public class Order {
 		this.createdAt = createdAt;
 	}
 
+	public Order() {
+	}
+
 	public Long getId() {
 		return id;
 	}

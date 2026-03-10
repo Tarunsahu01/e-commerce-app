@@ -25,22 +25,36 @@ public class User {
 	@ManyToOne
 	@JoinColumn(name = "role_id")
 	private Role role;
+	
+	@Column(nullable = false)
+	private boolean verified = false;
 
 	public User() {
 	}
 
-	public User(Long id, String name, String email, String password, Role role) {
+	public User(Long id, String name, String email, String password, Role role, boolean verified) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.password = password;
 		this.role = role;
+		this.verified = verified;
 	}
 
 	// Getters & Setters
+	
+	
 
 	public Long getId() {
 		return id;
+	}
+
+	public boolean isVerified() {
+		return verified;
+	}
+
+	public void setVerified(boolean verified) {
+		this.verified = verified;
 	}
 
 	public String getName() {
