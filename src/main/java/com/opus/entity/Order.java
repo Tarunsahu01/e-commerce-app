@@ -1,37 +1,50 @@
 package com.opus.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "orders")
+@Table(name="orders")
 public class Order {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+    private Double totalAmount;
 
-	private LocalDateTime orderDate;
+    private String paymentStatus; // PENDING, SUCCESS, FAILED
 
-	private Double totalAmount;
+    private String stripeSessionId;
 
-	private Double discountAmount;
+    @ManyToOne
+    private User user;
 
-	private String couponCode;
+    @ManyToOne
+    private Coupon coupon;
 
-	private String paymentStatus;
+    private LocalDateTime createdAt;
 
-	private String orderStatus;
+	public Order(Long id, Double totalAmount, String paymentStatus, String stripeSessionId, User user, Coupon coupon,
+			LocalDateTime createdAt) {
+		super();
+		this.id = id;
+		this.totalAmount = totalAmount;
+		this.paymentStatus = paymentStatus;
+		this.stripeSessionId = stripeSessionId;
+		this.user = user;
+		this.coupon = coupon;
+		this.createdAt = createdAt;
+	}
 
-	private String stripePaymentIntentId;
-
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	private List<OrderItem> orderItems;
+	public Order() {
+	}
 
 	public Long getId() {
 		return id;
@@ -39,22 +52,6 @@ public class Order {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public LocalDateTime getOrderDate() {
-		return orderDate;
-	}
-
-	public void setOrderDate(LocalDateTime orderDate) {
-		this.orderDate = orderDate;
 	}
 
 	public Double getTotalAmount() {
@@ -65,22 +62,6 @@ public class Order {
 		this.totalAmount = totalAmount;
 	}
 
-	public Double getDiscountAmount() {
-		return discountAmount;
-	}
-
-	public void setDiscountAmount(Double discountAmount) {
-		this.discountAmount = discountAmount;
-	}
-
-	public String getCouponCode() {
-		return couponCode;
-	}
-
-	public void setCouponCode(String couponCode) {
-		this.couponCode = couponCode;
-	}
-
 	public String getPaymentStatus() {
 		return paymentStatus;
 	}
@@ -89,28 +70,38 @@ public class Order {
 		this.paymentStatus = paymentStatus;
 	}
 
-	public String getOrderStatus() {
-		return orderStatus;
+	public String getStripeSessionId() {
+		return stripeSessionId;
 	}
 
-	public void setOrderStatus(String orderStatus) {
-		this.orderStatus = orderStatus;
+	public void setStripeSessionId(String stripeSessionId) {
+		this.stripeSessionId = stripeSessionId;
 	}
 
-	public String getStripePaymentIntentId() {
-		return stripePaymentIntentId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setStripePaymentIntentId(String stripePaymentIntentId) {
-		this.stripePaymentIntentId = stripePaymentIntentId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public List<OrderItem> getOrderItems() {
-		return orderItems;
+	public Coupon getCoupon() {
+		return coupon;
 	}
 
-	public void setOrderItems(List<OrderItem> orderItems) {
-		this.orderItems = orderItems;
+	public void setCoupon(Coupon coupon) {
+		this.coupon = coupon;
 	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+    
+    
 
 }

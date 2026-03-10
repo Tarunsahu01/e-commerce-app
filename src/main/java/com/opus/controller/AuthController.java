@@ -1,12 +1,20 @@
 package com.opus.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.opus.dto.LoginRequest;
 import com.opus.dto.MeResponse;
+import com.opus.dto.OtpVerifyRequest;
 import com.opus.dto.RegisterRequest;
 import com.opus.service.AuthService;
+
 import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,9 +27,14 @@ public class AuthController {
 	}
 
 	@PostMapping("/register")
-	public String register(@Valid @RequestBody RegisterRequest request) {
+	public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
 
-		return authService.registerUser(request);
+		return ResponseEntity.ok().body(authService.registerUser(request));
+	}
+	
+	@PostMapping("/verify-otp")
+	public String verifyOtp(@RequestBody OtpVerifyRequest request) {
+	    return authService.verifyOtp(request);
 	}
 
 	@PostMapping("/login")
