@@ -31,6 +31,7 @@ export function CartPage() {
     removeFromCart,
     applyCouponToCart,
     removeCouponFromCart,
+    handleCheckout,
   } = useCart();
 
   const [availableCoupons, setAvailableCoupons] = useState([]);
@@ -108,9 +109,9 @@ export function CartPage() {
     }
   };
 
-  const handleCheckout = () => {
-    navigate('/payment');
-  };
+  // const handleCheckout = () => {
+  //   navigate('/payment');
+  // };
 
   if (cartLoading) {
     return (

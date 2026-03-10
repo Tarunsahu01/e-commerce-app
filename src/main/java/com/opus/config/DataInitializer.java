@@ -4,14 +4,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.opus.entity.Category;
 import com.opus.entity.Product;
 import com.opus.entity.Role;
+import com.opus.entity.User;
 import com.opus.repo.CategoryRepository;
 import com.opus.repo.ProductRepository;
 import com.opus.repo.RoleRepository;
+import com.opus.repo.UserRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -19,21 +22,56 @@ public class DataInitializer implements CommandLineRunner {
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
 	private final RoleRepository roleRepository;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	public DataInitializer(ProductRepository productRepository, CategoryRepository categoryRepository,
-			RoleRepository roleRepository) {
+			RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
 		this.roleRepository = roleRepository;
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
 	public void run(String... args) {
+		seedRoles();
+		seedAdminUser();
 		seedCategories();
 		seedProducts();
 	}
 
 
+	private void seedRoles() {
+		if (roleRepository.count() > 0) {
+			return;
+		}
+		List<Role> roles = Arrays.asList(createRole("USER"), createRole("ADMIN"));
+		roleRepository.saveAll(roles);
+		System.out.println("Seeded " + roles.size() + " roles.");
+	}
+
+	private Role createRole(String name) {
+		Role role = new Role();
+		role.setName(name);
+		return role;
+	}
+
+	private void seedAdminUser() {
+		if (userRepository.findByEmail("admin@example.com").isPresent()) {
+			return;
+		}
+		Role adminRole = roleRepository.findByName("ADMIN")
+				.orElseThrow(() -> new IllegalStateException("ADMIN role not found"));
+		User admin = new User();
+		admin.setName("Admin");
+		admin.setEmail("admin@example.com");
+		admin.setPassword(passwordEncoder.encode("admin123"));
+		admin.setRole(adminRole);
+		userRepository.save(admin);
+		System.out.println("Seeded admin user (admin@example.com).");
+	}
 
 	private void seedCategories() {
 		if (categoryRepository.count() > 0) {

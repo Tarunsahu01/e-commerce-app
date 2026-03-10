@@ -33,6 +33,14 @@ public class OrderItem {
 		this.order = order;
 		this.product = product;
 	}
+	
+	public OrderItem(Integer quantity, Double priceAtTime, Order order, Product product) {
+		super();
+		this.quantity = quantity;
+		this.priceAtTime = priceAtTime;
+		this.order = order;
+		this.product = product;
+	}
 
 	public Long getId() {
 		return id;

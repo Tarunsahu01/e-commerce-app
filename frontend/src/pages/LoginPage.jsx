@@ -27,7 +27,12 @@ export function LoginPage() {
       const token = typeof data === 'string' ? data : data?.token;
       if (!token) throw new Error('No token received');
       await login(token);
-      navigate(from, { replace: true });
+      const role = localStorage.getItem('role');
+      if (role === 'admin') {
+        navigate('/admin-dashboard', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.message ?? err.message ?? 'Login failed');
     } finally {

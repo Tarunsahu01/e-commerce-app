@@ -1,5 +1,10 @@
 package com.opus.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.opus.dto.AddToCartRequest;
 import com.opus.dto.CheckoutItem;
 import com.opus.dto.CheckoutResponse;
@@ -16,10 +21,6 @@ import com.opus.repo.CouponRepository;
 import com.opus.repo.ProductRepository;
 import com.opus.repo.UserRepository;
 import com.opus.security.SecurityUtil;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class CartService {
