@@ -8,9 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import com.opus.security.JwtAuthenticationFilter;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -19,48 +17,50 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SecurityConfig {
 
-	private JwtAuthenticationFilter jwtFilter;
+    private JwtAuthenticationFilter jwtFilter;
 
-	public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
-		this.jwtFilter = jwtFilter;
-	}
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
+        this.jwtFilter = jwtFilter;
+    }
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verify-otp").permitAll()
-				.requestMatchers("/api/auth/me").authenticated()
-				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
-				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories/**").permitAll()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/uploads/**").permitAll()
+                .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verify-otp").permitAll()
+                .requestMatchers("/api/auth/me").authenticated()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories/**").permitAll()
+                .requestMatchers("/api/products/**").hasRole("ADMIN")
+                .requestMatchers("/api/categories/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-				.requestMatchers("/api/products/**").hasRole("ADMIN").requestMatchers("/api/categories/**")
-				.hasRole("ADMIN")
-				.anyRequest().authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
 
-		return http.build();
-	}
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                    .allowedOrigins("http://localhost:3000")
+                    .allowedMethods("*")
+                    .allowedHeaders("*");
+            }
+        };
+    }
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-
-				registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("*")
-						.allowedHeaders("*");
-			}
-		};
-	}
-
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-
-		return config.getAuthenticationManager();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 }
