@@ -28,7 +28,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+				.requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verify-otp").permitAll()
 				.requestMatchers("/api/auth/me").authenticated()
 				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products/**").permitAll()
 				.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/categories/**").permitAll()

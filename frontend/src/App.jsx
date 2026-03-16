@@ -19,6 +19,9 @@ import { EditProductPage } from './pages/EditProductPage';
 import { AddProductPage } from './pages/AddProductPage';
 import { CreateCouponPage } from './pages/CreateCouponPage';
 import { AdminEditCouponsPage } from './pages/AdminEditCouponsPage';
+import { VerifyOtpPage } from './pages/VerifyOtpPage';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancel from './pages/PaymentCancel';
 
 function App() {
   return (
@@ -31,8 +34,11 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/cart" element={<CartPage />} />
                 <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
+                <Route path="/payment-cancel" element={<PaymentCancel />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verify-otp" element={<VerifyOtpPage />} />
               </Route>
               <Route
                 path="/admin-dashboard"
