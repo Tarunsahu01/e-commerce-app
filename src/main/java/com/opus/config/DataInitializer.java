@@ -69,6 +69,7 @@ public class DataInitializer implements CommandLineRunner {
 		admin.setEmail("admin@example.com");
 		admin.setPassword(passwordEncoder.encode("admin123"));
 		admin.setRole(adminRole);
+		admin.setVerified(true);
 		userRepository.save(admin);
 		System.out.println("Seeded admin user (admin@example.com).");
 	}
