@@ -15,87 +15,74 @@ import com.opus.repo.ProductRepository;
 @Service
 public class ProductService {
 
-	private ProductRepository productRepository;
+    private ProductRepository productRepository;
+    private CategoryRepository categoryRepository;
 
-	private CategoryRepository categoryRepository;
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
-	public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
-		this.productRepository = productRepository;
-		this.categoryRepository = categoryRepository;
-	}
+    public ProductResponse createProduct(ProductRequest request) {
 
-	public ProductResponse createProduct(ProductRequest request) {
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-		Category category = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        Product product = new Product();
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setQuantityAvailable(request.getQuantityAvailable());
+        product.setCategory(category);
+        product.setImageUrl(request.getImageUrl()); // always set, even if null
 
-		Product product = new Product();
-		product.setName(request.getName());
-		product.setDescription(request.getDescription());
-		product.setPrice(request.getPrice());
-		product.setQuantityAvailable(request.getQuantityAvailable());
-		product.setCategory(category);
-		if (request.getImageUrl() != null) {
-			product.setImageUrl(request.getImageUrl());
-		}
+        Product savedProduct = productRepository.save(product);
+        return mapToResponse(savedProduct);
+    }
 
-		Product savedProduct = productRepository.save(product);
+    public ProductResponse updateProduct(Long id, ProductRequest request) {
 
-		return mapToResponse(savedProduct);
-	}
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
-	private ProductResponse mapToResponse(Product product) {
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
-		ProductResponse response = new ProductResponse();
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setQuantityAvailable(request.getQuantityAvailable());
+        product.setCategory(category);
+        product.setImageUrl(request.getImageUrl()); // always set, even if null
 
-		response.setId(product.getId());
-		response.setName(product.getName());
-		response.setDescription(product.getDescription());
-		response.setPrice(product.getPrice());
-		response.setQuantityAvailable(product.getQuantityAvailable());
-		response.setCategoryName(product.getCategory().getName());
-		response.setImageUrl(product.getImageUrl());
+        Product updatedProduct = productRepository.save(product);
+        return mapToResponse(updatedProduct);
+    }
 
-		return response;
-	}
+    private ProductResponse mapToResponse(Product product) {
+        ProductResponse response = new ProductResponse();
+        response.setId(product.getId());
+        response.setName(product.getName());
+        response.setDescription(product.getDescription());
+        response.setPrice(product.getPrice());
+        response.setQuantityAvailable(product.getQuantityAvailable());
+        response.setCategoryName(product.getCategory().getName());
+        response.setImageUrl(product.getImageUrl());
+        return response;
+    }
 
-	public List<Product> getAllProducts() {
-		return productRepository.findAll();
-	}
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
 
-	public Product getProductById(Long id) {
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+    }
 
-		return productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-	}
-
-	public ProductResponse updateProduct(Long id, ProductRequest request) {
-
-		Product product = productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-
-		Category category = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-
-		product.setName(request.getName());
-		product.setDescription(request.getDescription());
-		product.setPrice(request.getPrice());
-		product.setQuantityAvailable(request.getQuantityAvailable());
-		product.setCategory(category);
-		if (request.getImageUrl() != null) {
-			product.setImageUrl(request.getImageUrl());
-		}
-
-		Product updatedProduct = productRepository.save(product);
-
-		return mapToResponse(updatedProduct);
-	}
-
-	public void deleteProduct(Long id) {
-
-		Product product = productRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-
-		productRepository.delete(product);
-	}
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        productRepository.delete(product);
+    }
 }
