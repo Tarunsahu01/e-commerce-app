@@ -4,8 +4,10 @@
  * Integrates coupons: fetch applicable coupons, apply one, show discounted total.
  */
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { api } from '../lib/api';
 
 function isCouponValid(c) {
@@ -21,6 +23,9 @@ function isCouponValid(c) {
 
 export function CartPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const {
     cartItems,
     cartLoading,
@@ -40,6 +45,13 @@ export function CartPage() {
 
   const categoryIds = [...new Set(cartItems.map((item) => item.categoryId).filter((id) => id != null))];
   const categoryNames = [...new Set(cartItems.map((item) => item.categoryName).filter(Boolean))];
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      showToast('You must login first to view your cart.', 'warning');
+      navigate('/login', { replace: true, state: { from: location } });
+    }
+  }, [isAuthenticated, navigate, location, showToast]);
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -92,6 +104,7 @@ export function CartPage() {
     setCouponError(null);
     try {
       await applyCouponToCart(code);
+      showToast('Coupon applied successfully', 'success');
     } catch (err) {
       setCouponError(err.response?.data?.message ?? 'Could not apply coupon');
     } finally {
@@ -103,6 +116,7 @@ export function CartPage() {
     setCouponError(null);
     try {
       await removeCouponFromCart();
+      showToast('Coupon removed', 'info');
     } catch (err) {
       setCouponError(err.response?.data?.message ?? 'Could not remove coupon');
     }

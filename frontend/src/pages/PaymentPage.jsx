@@ -1,9 +1,13 @@
 /**
  * PaymentPage: Placeholder payment UI.
  */
+import { useToast } from '../context/ToastContext';
+
 export function PaymentPage() {
+  const { showToast } = useToast();
+
   const handleProceed = () => {
-    alert('Payment integration coming soon');
+    showToast('Payment integration coming soon', 'info');
   };
 
   return (

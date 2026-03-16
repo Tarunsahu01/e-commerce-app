@@ -14,11 +14,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { api } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 export function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState('');
   const menuRef = useRef(null);
@@ -74,6 +76,16 @@ export function Navbar() {
     navigate('/');
   };
 
+  const handleCartClick = (event) => {
+    event.preventDefault();
+    if (!isAuthenticated) {
+      showToast('You must login first to view your cart.', 'warning');
+      navigate('/login');
+      return;
+    }
+    navigate('/cart');
+  };
+
   return (
     <header className="bg-white border-b border-gray-200">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,8 +95,9 @@ export function Navbar() {
           </Link>
 
           <div className="flex items-center gap-2" ref={menuRef}>
-            <Link
-              to="/cart"
+            <button
+              type="button"
+              onClick={handleCartClick}
               className="relative p-2 rounded-md text-black hover:bg-gray-100 transition-colors"
               aria-label="Cart"
             >
@@ -109,7 +122,7 @@ export function Navbar() {
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             {!isAuthenticated ? (
               <Link

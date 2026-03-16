@@ -4,6 +4,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { ToastProvider } from './context/ToastContext';
 import { Layout } from './components/layout/Layout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminRoute } from './components/AdminRoute';
@@ -17,36 +18,40 @@ import { AdminProductsPage } from './pages/AdminProductsPage';
 import { EditProductPage } from './pages/EditProductPage';
 import { AddProductPage } from './pages/AddProductPage';
 import { CreateCouponPage } from './pages/CreateCouponPage';
+import { AdminEditCouponsPage } from './pages/AdminEditCouponsPage';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/payment" element={<PaymentPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-            </Route>
-            <Route
-              path="/admin-dashboard"
-              element={
-                <AdminRoute>
-                  <AdminLayout />
-                </AdminRoute>
-              }
-            >
-              <Route index element={<AdminDashboard />} />
-              <Route path="products" element={<AdminProductsPage />} />
-              <Route path="edit-product/:id" element={<EditProductPage />} />
-              <Route path="add-product" element={<AddProductPage />} />
-              <Route path="create-coupon" element={<CreateCouponPage />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <ToastProvider>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+              </Route>
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <AdminRoute>
+                    <AdminLayout />
+                  </AdminRoute>
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProductsPage />} />
+                <Route path="edit-product/:id" element={<EditProductPage />} />
+                <Route path="add-product" element={<AddProductPage />} />
+                <Route path="create-coupon" element={<CreateCouponPage />} />
+                <Route path="edit-coupons" element={<AdminEditCouponsPage />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </ToastProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -5,10 +5,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 export function EditProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -170,13 +172,30 @@ export function EditProductPage() {
           />
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
-        >
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await api.delete('/products/' + id);
+                showToast('Product deleted successfully', 'success');
+                navigate('/admin-dashboard/products');
+              } catch (err) {
+                showToast('Failed to delete product', 'error');
+              }
+            }}
+            className="px-4 py-2 text-sm font-medium rounded-md border border-red-600 text-red-700 hover:bg-red-50"
+          >
+            Delete Product
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+        </div>
       </form>
     </div>
   );
