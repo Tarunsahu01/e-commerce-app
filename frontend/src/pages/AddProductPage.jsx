@@ -1,6 +1,5 @@
 /**
  * AddProductPage: Admin form to add a new product.
- * GET /categories for dropdown; POST /products on submit. Option to add new category via POST /categories.
  */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,12 +13,12 @@ export function AddProductPage() {
   const [categories, setCategories] = useState([]);
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [image, setImage] = useState(null);
   const [form, setForm] = useState({
     name: '',
     price: '',
     categoryId: '',
     description: '',
-    imageUrl: '',
     quantityAvailable: 100,
   });
 
@@ -32,10 +31,9 @@ export function AddProductPage() {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    loadCategories()
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    loadCategories().finally(() => {
+      if (!cancelled) setLoading(false);
+    });
     return () => { cancelled = true; };
   }, []);
 
@@ -43,7 +41,10 @@ export function AddProductPage() {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === 'categoryId' || name === 'quantityAvailable' ? (value === '' ? '' : Number(value)) : value,
+      [name]:
+        name === 'categoryId' || name === 'quantityAvailable'
+          ? value === '' ? '' : Number(value)
+          : value,
     }));
   };
 
@@ -65,14 +66,22 @@ export function AddProductPage() {
     setError(null);
     setSaving(true);
     try {
-      await api.post('/products', {
-        name: form.name,
-        price: Number(form.price),
-        categoryId: Number(form.categoryId),
-        description: form.description || null,
-        imageUrl: form.imageUrl || null,
-        quantityAvailable: Number(form.quantityAvailable) || 1,
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('description', form.description || '');
+      formData.append('price', Number(form.price));
+      formData.append('quantityAvailable', Number(form.quantityAvailable) || 1);
+      formData.append('categoryId', Number(form.categoryId));
+      if (image) {
+        formData.append('image', image);
+      }
+
+      await api.post('/products', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+
       navigate('/admin-dashboard/products');
     } catch (err) {
       setError(err.response?.data?.message ?? err.message ?? 'Failed to add product');
@@ -131,9 +140,8 @@ export function AddProductPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Product Name</label>
+          <label className="block text-sm font-medium text-gray-700">Product Name</label>
           <input
-            id="name"
             name="name"
             type="text"
             value={form.name}
@@ -142,10 +150,10 @@ export function AddProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         <div>
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
+          <label className="block text-sm font-medium text-gray-700">Price</label>
           <input
-            id="price"
             name="price"
             type="number"
             min="0"
@@ -156,10 +164,10 @@ export function AddProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700">Category</label>
+          <label className="block text-sm font-medium text-gray-700">Category</label>
           <select
-            id="categoryId"
             name="categoryId"
             value={form.categoryId}
             onChange={handleChange}
@@ -172,10 +180,10 @@ export function AddProductPage() {
             ))}
           </select>
         </div>
+
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
-            id="description"
             name="description"
             value={form.description}
             onChange={handleChange}
@@ -183,21 +191,27 @@ export function AddProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">Image URL</label>
+          <label className="block text-sm font-medium text-gray-700">Product Image</label>
           <input
-            id="imageUrl"
-            name="imageUrl"
-            type="url"
-            value={form.imageUrl}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
           />
+          {image && (
+            <img
+              src={URL.createObjectURL(image)}
+              alt="preview"
+              className="mt-3 w-32 h-32 object-cover rounded-md border border-gray-200"
+            />
+          )}
         </div>
+
         <div>
-          <label htmlFor="quantityAvailable" className="block text-sm font-medium text-gray-700">Quantity</label>
+          <label className="block text-sm font-medium text-gray-700">Quantity</label>
           <input
-            id="quantityAvailable"
             name="quantityAvailable"
             type="number"
             min="1"
@@ -206,7 +220,9 @@ export function AddProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         {error && <p className="text-sm text-red-600">{error}</p>}
+
         <button
           type="submit"
           disabled={saving}

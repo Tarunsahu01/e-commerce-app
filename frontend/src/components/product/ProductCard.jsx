@@ -1,7 +1,5 @@
 /**
  * ProductCard: Reusable card for a single product.
- * Shows image, name, price, and Add to Cart button (or Edit Product in admin mode).
- * Add to Cart calls backend POST /api/cart/add when user is logged in.
  */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -15,8 +13,17 @@ export function ProductCard({ product, adminMode, onQuickView }) {
   const { addToCart } = useCart();
   const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
+
   const { id, name, price, imageUrl } = product ?? {};
+
   const displayPrice = price != null ? `₹${Number(price).toLocaleString('en-IN')}` : '—';
+
+  // Safely build the full image URL
+  const imageSrc = imageUrl
+    ? imageUrl.startsWith('http')
+      ? imageUrl
+      : `http://localhost:8080${imageUrl}`
+    : null;
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
@@ -24,7 +31,6 @@ export function ProductCard({ product, adminMode, onQuickView }) {
       navigate('/login');
       return;
     }
-
     setAdding(true);
     try {
       await addToCart(product);
@@ -36,23 +42,35 @@ export function ProductCard({ product, adminMode, onQuickView }) {
     }
   };
 
+  const ImageBlock = (
+    <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+      {imageSrc ? (
+        <img
+          src={imageSrc}
+          alt={name || 'Product'}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+      ) : null}
+      <span
+        className="text-gray-400 text-xs items-center justify-center"
+        style={{ display: imageSrc ? 'none' : 'flex' }}
+      >
+        No Image
+      </span>
+    </div>
+  );
+
   if (adminMode) {
     return (
       <article
         className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
         data-product-id={id}
       >
-        <div className="aspect-square bg-gray-100 flex items-center justify-center">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={name || 'Product'}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-gray-400 text-xs">No Image</span>
-          )}
-        </div>
+        {ImageBlock}
         <div className="p-3">
           <h3 className="text-sm font-medium text-black truncate" title={name}>
             {name || 'Unnamed product'}
@@ -79,17 +97,7 @@ export function ProductCard({ product, adminMode, onQuickView }) {
       role="button"
       tabIndex={0}
     >
-      <div className="aspect-[4/5] bg-gray-100 flex items-center justify-center">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={name || 'Product'}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-gray-400 text-xs">No Image</span>
-        )}
-      </div>
+      {ImageBlock}
       <div className="p-3">
         <h3 className="text-sm font-medium text-black truncate" title={name}>
           {name || 'Unnamed product'}

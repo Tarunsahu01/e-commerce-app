@@ -162,7 +162,7 @@ export function CartPage() {
                 <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
                   {item.image ? (
                     <img
-                      src={item.image}
+                      src={`http://localhost:8080${item.image}`}
                       alt={item.title}
                       className="w-full h-full object-cover rounded"
                     />
