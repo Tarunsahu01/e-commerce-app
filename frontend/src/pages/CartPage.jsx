@@ -1,7 +1,5 @@
 /**
  * CartPage: Displays cart items from backend API (GET /api/cart).
- * Shows product image, name, quantity, price, line total, total amount.
- * Integrates coupons: fetch applicable coupons, apply one, show discounted total.
  */
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -19,6 +17,13 @@ function isCouponValid(c) {
   } catch {
     return false;
   }
+}
+
+// Safely build image URL — handles full URLs, relative /uploads paths, and null
+function resolveImageUrl(image) {
+  if (!image) return null;
+  if (image.startsWith('http')) return image;
+  return `http://localhost:8080${image}`;
 }
 
 export function CartPage() {
@@ -97,8 +102,7 @@ export function CartPage() {
     (sum, item) => sum + (item.price ?? 0) * (item.quantity ?? 1),
     0
   );
-  const displayTotal =
-    cartTotalAmount != null ? cartTotalAmount : subtotalFromItems;
+  const displayTotal = cartTotalAmount != null ? cartTotalAmount : subtotalFromItems;
 
   const handleApplyCoupon = async (code) => {
     setApplyingCode(code);
@@ -122,10 +126,6 @@ export function CartPage() {
       setCouponError(err.response?.data?.message ?? 'Could not remove coupon');
     }
   };
-
-  // const handleCheckout = () => {
-  //   navigate('/payment');
-  // };
 
   if (cartLoading) {
     return (
@@ -154,22 +154,35 @@ export function CartPage() {
         <div className="mt-6 space-y-6">
           {cartItems.map((item) => {
             const lineTotal = (item.price ?? 0) * (item.quantity ?? 1);
+            const imageSrc = resolveImageUrl(item.image);
+
             return (
               <div
                 key={item.id}
                 className="flex gap-4 p-4 border border-gray-200 rounded-lg bg-white"
               >
-                <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
-                  {item.image ? (
+                {/* Product Image */}
+                <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                  {imageSrc ? (
                     <img
-                      src={`http://localhost:8080${item.image}`}
+                      src={imageSrc}
                       alt={item.title}
-                      className="w-full h-full object-cover rounded"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
                     />
-                  ) : (
-                    <span className="text-gray-400 text-xs">No Image</span>
-                  )}
+                  ) : null}
+                  <span
+                    className="text-gray-400 text-xs items-center justify-center"
+                    style={{ display: imageSrc ? 'none' : 'flex' }}
+                  >
+                    No Image
+                  </span>
                 </div>
+
+                {/* Product Details */}
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-black truncate">
                     {item.title}
@@ -211,7 +224,7 @@ export function CartPage() {
             );
           })}
 
-          {/* Available Coupons - always show when cart has items */}
+          {/* Coupons Section */}
           {cartItems.length > 0 && (
             <section className="border-t border-gray-200 pt-6">
               <h2 className="text-lg font-semibold text-black mb-3">Available Coupons</h2>
@@ -264,18 +277,20 @@ export function CartPage() {
                   ) : couponsLoading ? (
                     <p className="text-sm text-gray-500">Loading coupons…</p>
                   ) : (
-                    <p className="text-sm text-gray-500">No coupons available for your cart&apos;s categories.</p>
+                    <p className="text-sm text-gray-500">
+                      No coupons available for your cart&apos;s categories.
+                    </p>
                   )}
                 </>
               )}
             </section>
           )}
 
+          {/* Total + Checkout */}
           <div className="pt-4 border-t border-gray-200">
             <p className="text-lg font-semibold text-black">
               Total Amount: ₹{Number(displayTotal).toLocaleString('en-IN')}
             </p>
-          
             <button
               type="button"
               onClick={handleCheckout}
