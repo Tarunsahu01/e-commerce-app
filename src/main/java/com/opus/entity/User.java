@@ -37,8 +37,6 @@ public class User {
 		this.role = role;
 	}
 
-	// Getters & Setters
-
 	public Long getId() {
 		return id;
 	}
