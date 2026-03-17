@@ -14,7 +14,6 @@ export function CreateCouponPage() {
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
     code: '',
-    discountType: 'percentage',
     discountValue: '',
     categoryId: '',
     expiryDate: '',
@@ -39,9 +38,7 @@ export function CreateCouponPage() {
     setError(null);
     setSaving(true);
     try {
-      const discountPercentage = form.discountType === 'percentage'
-        ? Number(form.discountValue)
-        : Number(form.discountValue) || 0;
+      const discountPercentage = Number(form.discountValue) || 0;
       const payload = {
         code: form.code.trim().toUpperCase(),
         discountPercentage: Math.min(100, Math.max(1, discountPercentage)),
@@ -85,33 +82,20 @@ export function CreateCouponPage() {
           />
         </div>
         <div>
-          <label htmlFor="discountType" className="block text-sm font-medium text-gray-700">Discount Type</label>
-          <select
-            id="discountType"
-            name="discountType"
-            value={form.discountType}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
-          >
-            <option value="percentage">Percentage</option>
-            <option value="flat">Flat (use 0% and manage manually if needed)</option>
-          </select>
-        </div>
-        <div>
           <label htmlFor="discountValue" className="block text-sm font-medium text-gray-700">
-            Discount Value {form.discountType === 'percentage' ? '(%)' : '(flat amount)'}
+            Discount Value (%)
           </label>
           <input
             id="discountValue"
             name="discountValue"
             type="number"
-            min="0"
-            max={form.discountType === 'percentage' ? 100 : undefined}
-            step={form.discountType === 'percentage' ? 1 : 0.01}
+            min="1"
+            max={100}
+            step={1}
             value={form.discountValue}
             onChange={handleChange}
             required
-            placeholder={form.discountType === 'percentage' ? '20' : '100'}
+            placeholder="20"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>

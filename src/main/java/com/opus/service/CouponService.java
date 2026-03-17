@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.opus.dto.ApplicableCouponsRequest;
 import com.opus.dto.CouponRequest;
 import com.opus.dto.CouponResponse;
+import com.opus.dto.UpdateCouponRequest;
 import com.opus.entity.Category;
 import com.opus.entity.Coupon;
 import com.opus.exception.ResourceNotFoundException;
@@ -62,6 +63,31 @@ public class CouponService {
 				.stream()
 				.map(this::mapToResponse)
 				.toList();
+	}
+
+	public CouponResponse updateCoupon(Long id, UpdateCouponRequest request) {
+
+		Coupon coupon = couponRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Coupon not found with id: " + id));
+
+		if (request.getDiscountPercentage() != null) {
+			coupon.setDiscountPercentage(request.getDiscountPercentage());
+		}
+		if (request.getActive() != null) {
+			coupon.setActive(request.getActive());
+		}
+
+		Coupon saved = couponRepository.save(coupon);
+
+		return mapToResponse(saved);
+	}
+
+	public void deleteCoupon(Long id) {
+
+		Coupon coupon = couponRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Coupon not found with id: " + id));
+
+		couponRepository.delete(coupon);
 	}
 
 	private CouponResponse mapToResponse(Coupon coupon) {

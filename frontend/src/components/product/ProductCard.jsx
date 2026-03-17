@@ -5,11 +5,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 
-export function ProductCard({ product, adminMode }) {
+export function ProductCard({ product, adminMode, onQuickView }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
 
   const { id, name, price, imageUrl } = product ?? {};
@@ -25,16 +27,16 @@ export function ProductCard({ product, adminMode }) {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      alert('You need to sign in first.');
+      showToast('You must login first to add items to your cart.', 'warning');
       navigate('/login');
       return;
     }
     setAdding(true);
     try {
       await addToCart(product);
-      alert('This item has been added to the cart.');
+      showToast('Product added to cart', 'success');
     } catch {
-      alert('Failed to add to cart. Please try again.');
+      showToast('Failed to add to cart. Please try again.', 'error');
     } finally {
       setAdding(false);
     }
@@ -65,7 +67,7 @@ export function ProductCard({ product, adminMode }) {
   if (adminMode) {
     return (
       <article
-        className="flex-shrink-0 w-[180px] sm:w-[200px] bg-white border border-gray-200 rounded-md overflow-hidden hover:border-gray-300 transition-colors"
+        className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
         data-product-id={id}
       >
         {ImageBlock}
@@ -89,8 +91,11 @@ export function ProductCard({ product, adminMode }) {
 
   return (
     <article
-      className="flex-shrink-0 w-[180px] sm:w-[200px] bg-white border border-gray-200 rounded-md overflow-hidden hover:border-gray-300 transition-colors"
+      className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-1 transition-all"
       data-product-id={id}
+      onClick={() => onQuickView && onQuickView(product)}
+      role="button"
+      tabIndex={0}
     >
       {ImageBlock}
       <div className="p-3">
@@ -101,7 +106,10 @@ export function ProductCard({ product, adminMode }) {
         <div className="mt-2 flex justify-center">
           <button
             type="button"
-            onClick={handleAddToCart}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleAddToCart();
+            }}
             disabled={adding}
             className="w-full text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors disabled:opacity-50"
           >

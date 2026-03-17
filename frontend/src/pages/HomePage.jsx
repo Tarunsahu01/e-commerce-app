@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { Hero } from '../components/home/Hero';
 import { ProductCarousel } from '../components/home/ProductCarousel';
+import { ProductModal } from '../components/product/ProductModal';
 import { api } from '../lib/api';
 
 // Frontend-only helper to infer a category name for a product
@@ -102,6 +103,7 @@ export function HomePage() {
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('none');
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -158,6 +160,14 @@ export function HomePage() {
       copy.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     }
     return copy;
+  };
+
+  const handleOpenQuickView = (product) => {
+    setQuickViewProduct(product);
+  };
+
+  const handleCloseQuickView = () => {
+    setQuickViewProduct(null);
   };
 
   return (
@@ -238,11 +248,18 @@ export function HomePage() {
             >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
                 <h3 className="text-2xl font-bold text-black mb-6">{name}</h3>
-                <ProductCarousel products={sorted} />
+                <ProductCarousel
+                  products={sorted}
+                  onQuickView={handleOpenQuickView}
+                />
               </div>
             </section>
           );
         })}
+
+      {quickViewProduct && (
+        <ProductModal product={quickViewProduct} onClose={handleCloseQuickView} />
+      )}
     </>
   );
 }
