@@ -17,6 +17,10 @@ public class CouponRequest {
 	@Min(1)
 	@Max(100)
 	private Double discountPercentage;
+	
+	@NotNull
+	@Min(0)
+	private Double minOrderAmount;
 
 	@NotNull
 	@Future(message = "Expiry date must be future date")
@@ -37,6 +41,10 @@ public class CouponRequest {
 	public LocalDate getExpiryDate() {
 		return expiryDate;
 	}
+	
+	public Double getMinOrderAmount() {
+		return minOrderAmount;
+	}
 
 	public Long getCategoryId() {
 		return categoryId;
@@ -52,6 +60,10 @@ public class CouponRequest {
 
 	public void setExpiryDate(LocalDate expiryDate) {
 		this.expiryDate = expiryDate;
+	}
+	
+	public void setMinOrderAmount(Double minOrderAmount) {
+		this.minOrderAmount = minOrderAmount;
 	}
 
 	public void setCategoryId(Long categoryId) {

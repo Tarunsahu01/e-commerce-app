@@ -1,8 +1,6 @@
 /**
  * Hero Section on home page to show banners
  */
-import { Link } from 'react-router-dom';
-
 export function Hero() {
   return (
     <section className="bg-gray-100 border-b border-gray-200">
@@ -14,20 +12,6 @@ export function Hero() {
           <p className="mt-4 text-lg sm:text-xl text-gray-600">
             Shop the latest products. Fast delivery, easy returns.
           </p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <Link
-              to="/products"
-              className="inline-flex items-center px-6 py-3 bg-black text-white font-semibold rounded-md hover:bg-gray-800 transition-colors"
-            >
-              Shop Now
-            </Link>
-            <Link
-              to="/products"
-              className="inline-flex items-center px-6 py-3 border-2 border-black text-black font-semibold rounded-md hover:bg-gray-100 transition-colors"
-            >
-              Browse All
-            </Link>
-          </div>
         </div>
       </div>
     </section>
