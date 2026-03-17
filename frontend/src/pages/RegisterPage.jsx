@@ -35,7 +35,14 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center px-4">
+    <div className="relative min-h-screen w-full bg-white">
+      <div className="absolute inset-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+      <div className="relative z-10 flex flex-col items-center justify-start px-4 pt-8">
+      <div className="w-full max-w-md mb-8">
+        <Link to="/" className="flex justify-center">
+          <span className="text-3xl font-bold tracking-tight text-gray-900">E-Shop</span>
+        </Link>
+      </div>
       <div className="w-full max-w-md">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Create account</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -96,6 +103,7 @@ export function RegisterPage() {
             Sign in
           </Link>
         </p>
+      </div>
       </div>
     </div>
   );

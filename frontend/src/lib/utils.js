@@ -1,13 +1,14 @@
-/**
- * Parse JWT payload without verification (client-side display only).
- * Token verification happens server-side. We decode for UI (email in navbar).
- */
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
+
 export function parseJwtPayload(token) {
   try {
-    const base64 = token.split('.')[1];
-    if (!base64) return null;
-    const json = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(json);
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
   } catch {
     return null;
   }

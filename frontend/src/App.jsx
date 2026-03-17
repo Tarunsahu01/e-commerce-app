@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { SearchProvider } from './context/SearchContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/layout/Layout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminRoute } from './components/AdminRoute';
@@ -37,15 +38,18 @@ function App() {
                 <Route element={<Layout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/cart" element={<CartPage />} />
-                  <Route path="/payment" element={<PaymentPage />} />
+                  <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
                   <Route path="/orders" element={<OrderHistoryPage />} />
                   <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/payment-success" element={<PaymentSuccess />} />
-                  <Route path="/payment-cancel" element={<PaymentCancel />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-                  <Route path="/verify-otp" element={<VerifyOtpPage />} />
+                  <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+                  <Route path="/payment-cancel" element={<ProtectedRoute><PaymentCancel /></ProtectedRoute>} />
                 </Route>
+
+
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verify-otp" element={<VerifyOtpPage />} />
+
                 <Route
                   path="/admin-dashboard"
                   element={
