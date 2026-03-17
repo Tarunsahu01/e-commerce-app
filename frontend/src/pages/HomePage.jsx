@@ -1,24 +1,19 @@
 /**
- * HomePage: Hero + category-based product carousels with simple filters.
- *
- * All data fetching, grouping, and filtering is done on the frontend.
+ * HomePage: Hero + category-based product carousels with search + filters.
  */
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Hero } from '../components/home/Hero';
 import { ProductCarousel } from '../components/home/ProductCarousel';
 import { ProductModal } from '../components/product/ProductModal';
 import { api } from '../lib/api';
 
-// Frontend-only helper to infer a category name for a product
-// Works with multiple backend shapes and falls back to product name keywords.
 const inferCategoryFromProduct = (product) => {
   if (!product) return 'Other';
 
-  // Prefer explicit category fields if backend sends them
   if (typeof product.categoryName === 'string' && product.categoryName.trim() !== '') {
     return product.categoryName;
   }
-
   const rawCategory = product.category;
   if (typeof rawCategory === 'string' && rawCategory.trim() !== '') {
     return rawCategory;
@@ -27,72 +22,15 @@ const inferCategoryFromProduct = (product) => {
     return rawCategory.name;
   }
 
-  // Fallback: infer from product name (frontend-only grouping)
   const name = (product.name || '').toLowerCase();
   if (!name) return 'Other';
-
   const containsAny = (keywords) => keywords.some((kw) => name.includes(kw));
 
-  if (
-    containsAny([
-      'iphone',
-      'galaxy',
-      'macbook',
-      'dell inspiron',
-      'headphones',
-      'monitor',
-      'ipad',
-      'jbl',
-      'canon',
-      'smart watch',
-      'smartwatch',
-    ])
-  ) {
-    return 'Electronics';
-  }
-
-  if (containsAny(['backpack', 'travel bag', 'laptop sleeve', 'gym bag', 'office bag', 'duffel', 'trolley', 'sling'])) {
-    return 'Bags';
-  }
-
-  if (containsAny(['nike', 'adidas', 'puma', 'boots', 'sneakers', 'slippers', 'sandals', 'trainers', 'shoes'])) {
-    return 'Shoes';
-  }
-
-  if (
-    containsAny([
-      't-shirt',
-      't shirt',
-      'jeans',
-      'hoodie',
-      'jacket',
-      'shirt',
-      'shorts',
-      'track pants',
-      'sweater',
-      'kurta',
-      'blazer',
-    ])
-  ) {
-    return 'Clothing';
-  }
-
-  if (
-    containsAny([
-      'sunglasses',
-      'wallet',
-      'belt',
-      'cap',
-      'watch',
-      'bracelet',
-      'scarf',
-      'gloves',
-      'ring',
-      'keychain',
-    ])
-  ) {
-    return 'Accessories';
-  }
+  if (containsAny(['iphone', 'galaxy', 'macbook', 'dell inspiron', 'headphones', 'monitor', 'ipad', 'jbl', 'canon', 'smart watch', 'smartwatch'])) return 'Electronics';
+  if (containsAny(['backpack', 'travel bag', 'laptop sleeve', 'gym bag', 'office bag', 'duffel', 'trolley', 'sling'])) return 'Bags';
+  if (containsAny(['nike', 'adidas', 'puma', 'boots', 'sneakers', 'slippers', 'sandals', 'trainers', 'shoes'])) return 'Shoes';
+  if (containsAny(['t-shirt', 't shirt', 'jeans', 'hoodie', 'jacket', 'shirt', 'shorts', 'track pants', 'sweater', 'kurta', 'blazer'])) return 'Clothing';
+  if (containsAny(['sunglasses', 'wallet', 'belt', 'cap', 'watch', 'bracelet', 'scarf', 'gloves', 'ring', 'keychain'])) return 'Accessories';
 
   return 'Other';
 };
@@ -105,40 +43,39 @@ export function HomePage() {
   const [sortOrder, setSortOrder] = useState('none');
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const searchQuery = searchParams.get('search')?.toLowerCase().trim() ?? '';
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-
-    api
-      .get('/products')
+    api.get('/products')
       .then((res) => {
-        if (!cancelled) {
-          const data = Array.isArray(res.data) ? res.data : [];
-          setProducts(data);
-        }
+        if (!cancelled) setProducts(Array.isArray(res.data) ? res.data : []);
       })
       .catch((err) => {
-        if (!cancelled) {
-          setError(err.response?.data?.message ?? err.message ?? 'Failed to load products');
-        }
+        if (!cancelled) setError(err.response?.data?.message ?? err.message ?? 'Failed to load products');
       })
       .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       });
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  const groupedByCategory = products.reduce((acc, product) => {
+  // Filter products by search query if present
+  const filteredProducts = searchQuery
+    ? products.filter((p) =>
+        p.name?.toLowerCase().includes(searchQuery) ||
+        p.description?.toLowerCase().includes(searchQuery) ||
+        p.categoryName?.toLowerCase().includes(searchQuery)
+      )
+    : products;
+
+  const groupedByCategory = filteredProducts.reduce((acc, product) => {
     const categoryName = inferCategoryFromProduct(product);
-    if (!acc[categoryName]) {
-      acc[categoryName] = [];
-    }
+    if (!acc[categoryName]) acc[categoryName] = [];
     acc[categoryName].push(product);
     return acc;
   }, {});
@@ -154,38 +91,37 @@ export function HomePage() {
   const sortProducts = (items) => {
     if (!items) return [];
     const copy = [...items];
-    if (sortOrder === 'price-asc') {
-      copy.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    } else if (sortOrder === 'price-desc') {
-      copy.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-    }
+    if (sortOrder === 'price-asc') copy.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+    else if (sortOrder === 'price-desc') copy.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
     return copy;
-  };
-
-  const handleOpenQuickView = (product) => {
-    setQuickViewProduct(product);
-  };
-
-  const handleCloseQuickView = () => {
-    setQuickViewProduct(null);
   };
 
   return (
     <>
-      <Hero />
+      {/* Only show Hero when not searching */}
+      {!searchQuery && <Hero />}
 
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-black">Browse products</h2>
+              {searchQuery ? (
+                <div>
+                  <h2 className="text-xl font-semibold text-black">
+                    Search results for{' '}
+                    <span className="text-black font-bold">"{searchQuery}"</span>
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+                  </p>
+                </div>
+              ) : (
+                <h2 className="text-xl font-semibold text-black">Browse products</h2>
+              )}
             </div>
             <div className="flex flex-wrap gap-4">
               <div>
-                <label
-                  className="block text-xs font-medium text-gray-700 mb-1"
-                  htmlFor="category-filter"
-                >
+                <label className="block text-xs font-medium text-gray-700 mb-1" htmlFor="category-filter">
                   Category
                 </label>
                 <select
@@ -202,10 +138,7 @@ export function HomePage() {
                 </select>
               </div>
               <div>
-                <label
-                  className="block text-xs font-medium text-gray-700 mb-1"
-                  htmlFor="sort-filter"
-                >
+                <label className="block text-xs font-medium text-gray-700 mb-1" htmlFor="sort-filter">
                   Sort by price
                 </label>
                 <select
@@ -222,35 +155,29 @@ export function HomePage() {
             </div>
           </div>
 
-          {loading && (
-            <p className="mt-4 text-gray-600">Loading products...</p>
-          )}
-
-          {error && !loading && (
-            <p className="mt-4 text-gray-600">{error}</p>
-          )}
-
-          {!loading && !error && allCategoryNames.length === 0 && (
-            <p className="mt-4 text-gray-600">No products to show yet.</p>
+          {loading && <p className="mt-4 text-gray-600">Loading products...</p>}
+          {error && !loading && <p className="mt-4 text-gray-600">{error}</p>}
+          {!loading && !error && filteredProducts.length === 0 && (
+            <p className="mt-4 text-gray-600">
+              {searchQuery
+                ? `No products found for "${searchQuery}". Try a different search term.`
+                : 'No products to show yet.'}
+            </p>
           )}
         </div>
       </section>
 
-      {!loading &&
-        !error &&
+      {!loading && !error &&
         visibleCategoryNames.map((name) => {
           const sorted = sortProducts(groupedByCategory[name]);
           if (!sorted.length) return null;
           return (
-            <section
-              key={name}
-              className="bg-white border-b border-gray-200"
-            >
+            <section key={name} className="bg-white border-b border-gray-200">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
                 <h3 className="text-2xl font-bold text-black mb-6">{name}</h3>
                 <ProductCarousel
                   products={sorted}
-                  onQuickView={handleOpenQuickView}
+                  onQuickView={setQuickViewProduct}
                 />
               </div>
             </section>
@@ -258,7 +185,7 @@ export function HomePage() {
         })}
 
       {quickViewProduct && (
-        <ProductModal product={quickViewProduct} onClose={handleCloseQuickView} />
+        <ProductModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
       )}
     </>
   );
