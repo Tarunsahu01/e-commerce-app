@@ -164,6 +164,16 @@ public class CartService {
 		cart.setTotalAmount(total);
 		cart.setUpdatedAt(java.time.LocalDateTime.now());
 	}
+	
+	private double calculateCartSubtotal(Cart cart) {
+		if (cart == null || cart.getCartItems() == null) return 0.0;
+		double subtotal = 0.0;
+		for (CartItem item : cart.getCartItems()) {
+			subtotal += (item.getPriceAtTime() != null ? item.getPriceAtTime() : 0.0)
+					* (item.getQuantity() != null ? item.getQuantity() : 0);
+		}
+		return subtotal;
+	}
 
 	public Cart removeItemFromCart(Long productId) {
 
@@ -193,6 +203,12 @@ public class CartService {
 		if (coupon.getExpiryDate().isBefore(java.time.LocalDate.now())) {
 
 			throw new RuntimeException("Coupon expired");
+		}
+		
+		double subtotal = calculateCartSubtotal(cart);
+		double minOrder = coupon.getMinOrderAmount() != null ? coupon.getMinOrderAmount() : 0.0;
+		if (subtotal < minOrder) {
+			throw new RuntimeException("Minimum order amount is ₹" + minOrder);
 		}
 
 		cart.setAppliedCoupon(coupon);
@@ -228,7 +244,10 @@ public class CartService {
 		boolean categoryExists = cart.getCartItems().stream()
 				.anyMatch(item -> item.getProduct().getCategory().getId().equals(coupon.getCategory().getId()));
 
-		if (!categoryExists) {
+		double subtotal = calculateCartSubtotal(cart);
+		double minOrder = coupon.getMinOrderAmount() != null ? coupon.getMinOrderAmount() : 0.0;
+
+		if (!categoryExists || subtotal < minOrder) {
 			cart.setAppliedCoupon(null);
 		}
 	}

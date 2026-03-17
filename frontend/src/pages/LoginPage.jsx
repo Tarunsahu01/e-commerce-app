@@ -3,7 +3,7 @@
  *
  * Redirects to 'from' location (e.g. /cart) or / on success.
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -13,10 +13,21 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const { state } = useLocation();
   const from = state?.from?.pathname ?? '/';
+
+  // If already logged in, don't allow visiting /login
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const role = user?.role ?? (localStorage.getItem('role') === 'admin' ? 'ADMIN' : 'USER');
+    if (role === 'ADMIN') {
+      navigate('/admin-dashboard', { replace: true });
+    } else {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, user?.role, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +45,13 @@ export function LoginPage() {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.message ?? err.message ?? 'Login failed');
+      const status = err.response?.status;
+      const serverMessage = err.response?.data?.message;
+      if (status === 400 || status === 401) {
+        setError('Invalid email or password');
+      } else {
+        setError(serverMessage ?? err.message ?? 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -83,7 +100,7 @@ export function LoginPage() {
           </button>
         </form>
         <p className="mt-4 text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link to="/register" className="text-black font-medium underline hover:no-underline">
             Register
           </Link>
