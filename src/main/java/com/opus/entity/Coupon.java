@@ -16,6 +16,9 @@ public class Coupon {
 
 	private Double discountPercentage;
 
+	@Column(name = "min_order_amount")
+	private Double minOrderAmount = 0.0;
+
 	private LocalDate expiryDate;
 
 	private boolean active = true;
@@ -40,6 +43,10 @@ public class Coupon {
 	public Double getDiscountPercentage() {
 		return discountPercentage;
 	}
+	
+	public Double getMinOrderAmount() {
+		return minOrderAmount;
+	}
 
 	public LocalDate getExpiryDate() {
 		return expiryDate;
@@ -63,6 +70,10 @@ public class Coupon {
 
 	public void setDiscountPercentage(Double discountPercentage) {
 		this.discountPercentage = discountPercentage;
+	}
+	
+	public void setMinOrderAmount(Double minOrderAmount) {
+		this.minOrderAmount = minOrderAmount;
 	}
 
 	public void setExpiryDate(LocalDate expiryDate) {

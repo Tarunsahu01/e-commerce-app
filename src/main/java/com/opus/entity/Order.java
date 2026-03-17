@@ -1,12 +1,19 @@
 package com.opus.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,6 +28,7 @@ public class Order {
 
     private String paymentStatus; // PENDING, SUCCESS, FAILED
 
+    @Column(unique = true)
     private String stripeSessionId;
 
     @ManyToOne
@@ -30,6 +38,12 @@ public class Order {
     private Coupon coupon;
 
     private LocalDateTime createdAt;
+
+    private Boolean orderConfirmationEmailSent = false;
+    
+    @JsonManagedReference
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
 	public Order(Long id, Double totalAmount, String paymentStatus, String stripeSessionId, User user, Coupon coupon,
 			LocalDateTime createdAt) {
@@ -100,6 +114,22 @@ public class Order {
 
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
+	}
+	
+	public Boolean getOrderConfirmationEmailSent() {
+		return orderConfirmationEmailSent;
+	}
+	
+	public void setOrderConfirmationEmailSent(Boolean orderConfirmationEmailSent) {
+		this.orderConfirmationEmailSent = orderConfirmationEmailSent;
+	}
+
+	public List<OrderItem> getOrderItems() {
+		return orderItems;
+	}
+
+	public void setOrderItems(List<OrderItem> orderItems) {
+		this.orderItems = orderItems;
 	}
     
     

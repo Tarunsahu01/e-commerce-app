@@ -109,7 +109,7 @@ export function HomePage() {
                 <div>
                   <h2 className="text-xl font-semibold text-black">
                     Search results for{' '}
-                    <span className="text-black font-bold">"{searchQuery}"</span>
+                    <span className="text-black font-bold">&quot;{searchQuery}&quot;</span>
                   </h2>
                   <p className="text-sm text-gray-500 mt-1">
                     {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found

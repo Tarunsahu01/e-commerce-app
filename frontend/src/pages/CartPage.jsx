@@ -21,6 +21,22 @@ function isCouponValid(c) {
   }
 }
 
+function resolveImageSrc(raw) {
+  if (!raw) return null;
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http') || trimmed.startsWith('data:')) return trimmed;
+
+  let path = trimmed;
+  // Some backends may return `uploads/foo.jpg` instead of `/uploads/foo.jpg`
+  if (!path.startsWith('/')) path = `/${path}`;
+  // If an API path is returned, strip `/api` for direct backend static serving
+  if (path.startsWith('/api/')) path = path.replace(/^\/api/, '');
+
+  return `http://localhost:8080${path}`;
+}
+
 export function CartPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,7 +52,6 @@ export function CartPage() {
     removeFromCart,
     applyCouponToCart,
     removeCouponFromCart,
-    handleCheckout,
   } = useCart();
 
   const [availableCoupons, setAvailableCoupons] = useState([]);
@@ -154,21 +169,33 @@ export function CartPage() {
         <div className="mt-6 space-y-6">
           {cartItems.map((item) => {
             const lineTotal = (item.price ?? 0) * (item.quantity ?? 1);
+            const imageSrc = resolveImageSrc(item.image);
             return (
               <div
                 key={item.id}
                 className="flex gap-4 p-4 border border-gray-200 rounded-lg bg-white"
               >
                 <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
-                  {item.image ? (
+                  {imageSrc ? (
                     <img
-                      src={`http://localhost:8080${item.image}`}
+                      src={imageSrc}
                       alt={item.title}
                       className="w-full h-full object-cover rounded"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextSibling;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
                     />
                   ) : (
                     <span className="text-gray-400 text-xs">No Image</span>
                   )}
+                  <span
+                    className="text-gray-400 text-xs items-center justify-center"
+                    style={{ display: imageSrc ? 'none' : 'flex' }}
+                  >
+                    No Image
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-black truncate">
@@ -278,7 +305,7 @@ export function CartPage() {
           
             <button
               type="button"
-              onClick={handleCheckout}
+              onClick={() => navigate('/payment')}
               className="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-900 transition-colors"
             >
               Checkout

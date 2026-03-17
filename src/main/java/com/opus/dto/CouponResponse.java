@@ -7,6 +7,7 @@ public class CouponResponse {
 	private Long id;
 	private String code;
 	private Double discountPercentage;
+	private Double minOrderAmount;
 	private LocalDate expiryDate;
 	private boolean active;
 	private String categoryName;
@@ -25,6 +26,10 @@ public class CouponResponse {
 
 	public Double getDiscountPercentage() {
 		return discountPercentage;
+	}
+	
+	public Double getMinOrderAmount() {
+		return minOrderAmount;
 	}
 
 	public LocalDate getExpiryDate() {
@@ -49,6 +54,10 @@ public class CouponResponse {
 
 	public void setDiscountPercentage(Double discountPercentage) {
 		this.discountPercentage = discountPercentage;
+	}
+	
+	public void setMinOrderAmount(Double minOrderAmount) {
+		this.minOrderAmount = minOrderAmount;
 	}
 
 	public void setExpiryDate(LocalDate expiryDate) {

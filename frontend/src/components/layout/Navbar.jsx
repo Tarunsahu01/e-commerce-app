@@ -259,6 +259,15 @@ export function Navbar() {
                         Admin Dashboard
                       </Link>
                     )}
+                    {!isAdmin && (
+                      <Link
+                        to="/orders"
+                        className="block px-4 py-2 text-sm text-black hover:bg-gray-100"
+                        onClick={() => setOpen(false)}
+                      >
+                        My Orders
+                      </Link>
+                    )}
                     <button
                       type="button"
                       onClick={handleLogout}
