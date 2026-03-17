@@ -11,3 +11,19 @@
     @apply antialiased text-black bg-white min-h-screen;
   }
 }
+
+@keyframes toast-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-slide-in-left {
+  animation: toast-slide-in-left 0.25s ease-out;
+}
+

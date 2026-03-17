@@ -1,24 +1,26 @@
 /**
  * EditProductPage: Admin form to edit a product.
- * GET /products/:id to load, PUT /products/:id to save. Redirects to admin product list on success.
  */
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 export function EditProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [image, setImage] = useState(null);
+  const [existingImageUrl, setExistingImageUrl] = useState(null);
   const [form, setForm] = useState({
     name: '',
     price: '',
     categoryId: '',
     description: '',
-    imageUrl: '',
     quantityAvailable: 100,
   });
 
@@ -33,21 +35,19 @@ export function EditProductPage() {
       .then(([productRes, categoriesRes]) => {
         if (cancelled) return;
         const product = productRes.data;
-        const catList = Array.isArray(categoriesRes.data) ? categoriesRes.data : [];
-        setCategories(catList);
+        setCategories(Array.isArray(categoriesRes.data) ? categoriesRes.data : []);
+        setExistingImageUrl(product.imageUrl ?? null);
         setForm({
           name: product.name ?? '',
           price: product.price ?? '',
           categoryId: product.categoryId ?? product.category?.id ?? '',
           description: product.description ?? '',
-          imageUrl: product.imageUrl ?? '',
           quantityAvailable: product.quantityAvailable ?? 100,
         });
       })
       .catch((err) => {
-        if (!cancelled) {
+        if (!cancelled)
           setError(err.response?.data?.message ?? err.message ?? 'Failed to load product');
-        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -57,7 +57,13 @@ export function EditProductPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: name === 'categoryId' || name === 'quantityAvailable' ? (value === '' ? '' : Number(value)) : value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]:
+        name === 'categoryId' || name === 'quantityAvailable'
+          ? value === '' ? '' : Number(value)
+          : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -65,14 +71,22 @@ export function EditProductPage() {
     setError(null);
     setSaving(true);
     try {
-      await api.put('/products/' + id, {
-        name: form.name,
-        price: Number(form.price),
-        categoryId: Number(form.categoryId),
-        description: form.description || null,
-        imageUrl: form.imageUrl || null,
-        quantityAvailable: Number(form.quantityAvailable) || 1,
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('description', form.description || '');
+      formData.append('price', Number(form.price));
+      formData.append('quantityAvailable', Number(form.quantityAvailable) || 1);
+      formData.append('categoryId', Number(form.categoryId));
+      if (image) {
+        formData.append('image', image);
+      }
+
+      await api.put('/products/' + id, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+
       navigate('/admin-dashboard/products');
     } catch (err) {
       setError(err.response?.data?.message ?? err.message ?? 'Failed to save');
@@ -89,14 +103,20 @@ export function EditProductPage() {
     );
   }
 
+  const currentImageSrc = existingImageUrl
+    ? existingImageUrl.startsWith('http')
+      ? existingImageUrl
+      : `http://localhost:8080${existingImageUrl}`
+    : null;
+
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-black mb-6">Edit Product</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
+
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Product Name</label>
+          <label className="block text-sm font-medium text-gray-700">Product Name</label>
           <input
-            id="name"
             name="name"
             type="text"
             value={form.name}
@@ -105,10 +125,10 @@ export function EditProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         <div>
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price</label>
+          <label className="block text-sm font-medium text-gray-700">Price</label>
           <input
-            id="price"
             name="price"
             type="number"
             min="0"
@@ -119,10 +139,10 @@ export function EditProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700">Category</label>
+          <label className="block text-sm font-medium text-gray-700">Category</label>
           <select
-            id="categoryId"
             name="categoryId"
             value={form.categoryId}
             onChange={handleChange}
@@ -135,10 +155,10 @@ export function EditProductPage() {
             ))}
           </select>
         </div>
+
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
-            id="description"
             name="description"
             value={form.description}
             onChange={handleChange}
@@ -146,21 +166,43 @@ export function EditProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">Image URL</label>
+          <label className="block text-sm font-medium text-gray-700">Product Image</label>
+
+          {currentImageSrc && !image && (
+            <div className="mt-2 mb-2">
+              <p className="text-xs text-gray-500 mb-1">Current image:</p>
+              <img
+                src={currentImageSrc}
+                alt="current"
+                className="w-32 h-32 object-cover rounded-md border border-gray-200"
+              />
+            </div>
+          )}
+
           <input
-            id="imageUrl"
-            name="imageUrl"
-            type="url"
-            value={form.imageUrl}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
           />
+
+          {image && (
+            <div className="mt-2">
+              <p className="text-xs text-gray-500 mb-1">New image preview:</p>
+              <img
+                src={URL.createObjectURL(image)}
+                alt="preview"
+                className="w-32 h-32 object-cover rounded-md border border-gray-200"
+              />
+            </div>
+          )}
         </div>
+
         <div>
-          <label htmlFor="quantityAvailable" className="block text-sm font-medium text-gray-700">Quantity</label>
+          <label className="block text-sm font-medium text-gray-700">Quantity</label>
           <input
-            id="quantityAvailable"
             name="quantityAvailable"
             type="number"
             min="1"
@@ -169,14 +211,32 @@ export function EditProductPage() {
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
           />
         </div>
+
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
-        >
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await api.delete('/products/' + id);
+                showToast('Product deleted successfully', 'success');
+                navigate('/admin-dashboard/products');
+              } catch (err) {
+                showToast('Failed to delete product', 'error');
+              }
+            }}
+            className="px-4 py-2 text-sm font-medium rounded-md border border-red-600 text-red-700 hover:bg-red-50"
+          >
+            Delete Product
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="flex-1 py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+        </div>
       </form>
     </div>
   );

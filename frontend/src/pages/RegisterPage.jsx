@@ -20,11 +20,13 @@ export function RegisterPage() {
     setError(null);
     setLoading(true);
     try {
-      await api.post('/auth/register', { name, email, password });
-      const { data } = await api.post('/auth/login', { email, password });
-      const token = typeof data === 'string' ? data : data?.token;
-      if (token) await login(token, { name, email, role: 'USER' });
-      navigate('/', { replace: true });
+      const response = await api.post('/auth/register', { name, email, password });
+      if (response.status === 200) {
+        navigate('/verify-otp', { state: { email } });
+        // const token = typeof data === 'string' ? data : data?.token;
+        // if (token) await login(token, { name, email, role: 'USER' });
+        // navigate('/', { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.message ?? err.message ?? 'Registration failed');
     } finally {

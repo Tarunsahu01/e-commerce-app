@@ -1,6 +1,6 @@
 /**
  * AdminDashboard: Landing page for admin after login.
- * Sections: Manage Products, Add Product, Create Coupon.
+ * Sections: Manage Products, Add Product, Create Coupon, Edit Coupons.
  * No cart icon or user cart features (handled by AdminLayout).
  */
 import { Link } from 'react-router-dom';
@@ -27,6 +27,12 @@ export function AdminDashboard() {
           className="px-5 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
         >
           Create Coupon
+        </Link>
+        <Link
+          to="/admin-dashboard/edit-coupons"
+          className="px-5 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
+        >
+          Edit Coupons
         </Link>
       </div>
     </div>

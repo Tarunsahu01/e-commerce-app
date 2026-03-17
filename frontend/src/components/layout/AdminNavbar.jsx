@@ -101,13 +101,6 @@ export function AdminNavbar() {
                         </>
                       )}
                     </div>
-                    <Link
-                      to="/"
-                      className="block px-4 py-2 text-sm text-black hover:bg-gray-100"
-                      onClick={() => setOpen(false)}
-                    >
-                      View Store
-                    </Link>
                     <button
                       type="button"
                       onClick={handleLogout}

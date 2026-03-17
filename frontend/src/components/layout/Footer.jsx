@@ -12,7 +12,10 @@ export function Footer() {
             E-Shop
           </Link>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">
+            <a
+              href="mailto:vermahg@rknec.edu"
+              className="hover:text-white transition-colors"
+            >
               Contact
             </a>
           </div>

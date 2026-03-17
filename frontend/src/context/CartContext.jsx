@@ -16,7 +16,10 @@ const CartContext = createContext(null);
  */
 function cartResponseToItems(cart) {
   if (!cart?.cartItems || !Array.isArray(cart.cartItems)) return [];
+  console.log(cart.id);
+
   return cart.cartItems.map((ci) => ({
+
     id: ci.product?.id,
     productId: ci.product?.id,
     title: ci.product?.name ?? 'Product',
@@ -169,6 +172,19 @@ export function CartProvider({ children }) {
     }
   }, [setCartFromResponse]);
 
+  const handleCheckout = async () => {
+    try {
+      const res = await api.post("payment/checkout");
+
+      console.log(res.data.sessionUrl);
+      
+      window.location.href = res.data.sessionUrl;
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const value = {
     cartItems,
     setCartItems,
@@ -182,6 +198,7 @@ export function CartProvider({ children }) {
     removeFromCart,
     applyCouponToCart,
     removeCouponFromCart,
+    handleCheckout,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

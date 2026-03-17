@@ -1,28 +1,49 @@
 package com.opus.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "order_items")
+@Table(name="order_items")
 public class OrderItem {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "order_id")
-	private Order order;
+    private Integer quantity;
 
-	private Long productId;
+    private Double priceAtTime;
 
-	private String productName;
+    @ManyToOne
+    private Order order;
 
-	private Double priceAtPurchase;
+    @ManyToOne
+    private Product product;
 
-	private Integer quantity;
+    public OrderItem() {
+	}
 
-	private Double subtotal;
+	public OrderItem(Long id, Integer quantity, Double priceAtTime, Order order, Product product) {
+		super();
+		this.id = id;
+		this.quantity = quantity;
+		this.priceAtTime = priceAtTime;
+		this.order = order;
+		this.product = product;
+	}
+	
+	public OrderItem(Integer quantity, Double priceAtTime, Order order, Product product) {
+		super();
+		this.quantity = quantity;
+		this.priceAtTime = priceAtTime;
+		this.order = order;
+		this.product = product;
+	}
 
 	public Long getId() {
 		return id;
@@ -30,38 +51,6 @@ public class OrderItem {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Order getOrder() {
-		return order;
-	}
-
-	public void setOrder(Order order) {
-		this.order = order;
-	}
-
-	public Long getProductId() {
-		return productId;
-	}
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
-	public String getProductName() {
-		return productName;
-	}
-
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
-	public Double getPriceAtPurchase() {
-		return priceAtPurchase;
-	}
-
-	public void setPriceAtPurchase(Double priceAtPurchase) {
-		this.priceAtPurchase = priceAtPurchase;
 	}
 
 	public Integer getQuantity() {
@@ -72,12 +61,30 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 
-	public Double getSubtotal() {
-		return subtotal;
+	public Double getPriceAtTime() {
+		return priceAtTime;
 	}
 
-	public void setSubtotal(Double subtotal) {
-		this.subtotal = subtotal;
+	public void setPriceAtTime(Double priceAtTime) {
+		this.priceAtTime = priceAtTime;
 	}
+
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+    
+    
 
 }

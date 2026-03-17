@@ -1,56 +1,76 @@
 /**
  * ProductCard: Reusable card for a single product.
- * Shows image, name, price, and Add to Cart button (or Edit Product in admin mode).
- * Add to Cart calls backend POST /api/cart/add when user is logged in.
  */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 
-export function ProductCard({ product, adminMode }) {
+export function ProductCard({ product, adminMode, onQuickView }) {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
   const [adding, setAdding] = useState(false);
+
   const { id, name, price, imageUrl } = product ?? {};
+
   const displayPrice = price != null ? `₹${Number(price).toLocaleString('en-IN')}` : '—';
+
+  // Safely build the full image URL
+  const imageSrc = imageUrl
+    ? imageUrl.startsWith('http')
+      ? imageUrl
+      : `http://localhost:8080${imageUrl}`
+    : null;
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      alert('You need to sign in first.');
+      showToast('You must login first to add items to your cart.', 'warning');
       navigate('/login');
       return;
     }
-
     setAdding(true);
     try {
       await addToCart(product);
-      alert('This item has been added to the cart.');
+      showToast('Product added to cart', 'success');
     } catch {
-      alert('Failed to add to cart. Please try again.');
+      showToast('Failed to add to cart. Please try again.', 'error');
     } finally {
       setAdding(false);
     }
   };
 
+  const ImageBlock = (
+    <div className="aspect-square bg-gray-100 flex items-center justify-center overflow-hidden">
+      {imageSrc ? (
+        <img
+          src={imageSrc}
+          alt={name || 'Product'}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+          }}
+        />
+      ) : null}
+      <span
+        className="text-gray-400 text-xs items-center justify-center"
+        style={{ display: imageSrc ? 'none' : 'flex' }}
+      >
+        No Image
+      </span>
+    </div>
+  );
+
   if (adminMode) {
     return (
       <article
-        className="flex-shrink-0 w-[180px] sm:w-[200px] bg-white border border-gray-200 rounded-md overflow-hidden hover:border-gray-300 transition-colors"
+        className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
         data-product-id={id}
       >
-        <div className="aspect-square bg-gray-100 flex items-center justify-center">
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt={name || 'Product'}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <span className="text-gray-400 text-xs">No Image</span>
-          )}
-        </div>
+        {ImageBlock}
         <div className="p-3">
           <h3 className="text-sm font-medium text-black truncate" title={name}>
             {name || 'Unnamed product'}
@@ -71,20 +91,13 @@ export function ProductCard({ product, adminMode }) {
 
   return (
     <article
-      className="flex-shrink-0 w-[180px] sm:w-[200px] bg-white border border-gray-200 rounded-md overflow-hidden hover:border-gray-300 transition-colors"
+      className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-1 transition-all"
       data-product-id={id}
+      onClick={() => onQuickView && onQuickView(product)}
+      role="button"
+      tabIndex={0}
     >
-      <div className="aspect-square bg-gray-100 flex items-center justify-center">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={name || 'Product'}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="text-gray-400 text-xs">No Image</span>
-        )}
-      </div>
+      {ImageBlock}
       <div className="p-3">
         <h3 className="text-sm font-medium text-black truncate" title={name}>
           {name || 'Unnamed product'}
@@ -93,7 +106,10 @@ export function ProductCard({ product, adminMode }) {
         <div className="mt-2 flex justify-center">
           <button
             type="button"
-            onClick={handleAddToCart}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleAddToCart();
+            }}
             disabled={adding}
             className="w-full text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors disabled:opacity-50"
           >

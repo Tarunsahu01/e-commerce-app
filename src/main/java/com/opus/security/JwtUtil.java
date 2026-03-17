@@ -23,7 +23,7 @@ public class JwtUtil {
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(System.currentTimeMillis()
-                                + 1000 * 60 * 60))
+                                + 100000 * 60 * 60))
                 .signWith(key)
                 .compact();
     }
