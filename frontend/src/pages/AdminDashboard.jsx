@@ -32,7 +32,7 @@ export function AdminDashboard() {
           to="/admin-dashboard/edit-coupons"
           className="px-5 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
         >
-          Edit Coupons
+          Manage Coupons
         </Link>
       </div>
     </div>
