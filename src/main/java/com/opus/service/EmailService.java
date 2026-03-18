@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.opus.entity.Order;
 import com.opus.entity.OrderItem;
+import com.opus.entity.User;
 
 @Service
 public class EmailService {
@@ -70,5 +71,25 @@ public class EmailService {
         message.setText(body.toString());
 
         mailSender.send(message);
+    }
+
+    public void sendOfferEmail(String to, String subject, String message) {
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setFrom("E-commerce website <pranavedu16@gmail.com>");
+        email.setTo(to);
+        email.setSubject(subject);
+        email.setText("Hello,\\n\\n" + message + "\\n\\nBest regards,\\nE-commerce Team");
+
+        mailSender.send(email);
+    }
+
+    public void sendBulkOffer(List<User> users, String subject, String message) {
+        if (users == null || users.isEmpty()) {
+            return;
+        }
+
+        for (User user : users) {
+            sendOfferEmail(user.getEmail(), subject, message);
+        }
     }
 }
