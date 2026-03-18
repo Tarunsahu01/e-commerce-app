@@ -1,8 +1,5 @@
 package com.opus.dto;
 
-/**
- * Response for GET /api/auth/me — current user profile (name from database).
- */
 public class MeResponse {
 
 	private String name;

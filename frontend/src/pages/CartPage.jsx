@@ -19,6 +19,22 @@ function isCouponValid(c) {
   }
 }
 
+function resolveImageSrc(raw) {
+  if (!raw) return null;
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('http') || trimmed.startsWith('data:')) return trimmed;
+
+  let path = trimmed;
+  // Some backends may return `uploads/foo.jpg` instead of `/uploads/foo.jpg`
+  if (!path.startsWith('/')) path = `/${path}`;
+  // If an API path is returned, strip `/api` for direct backend static serving
+  if (path.startsWith('/api/')) path = path.replace(/^\/api/, '');
+
+  return `http://localhost:8080${path}`;
+}
+
 // Safely build image URL — handles full URLs, relative /uploads paths, and null
 function resolveImageUrl(image) {
   if (!image) return null;
@@ -41,7 +57,6 @@ export function CartPage() {
     removeFromCart,
     applyCouponToCart,
     removeCouponFromCart,
-    handleCheckout,
   } = useCart();
 
   const [availableCoupons, setAvailableCoupons] = useState([]);
@@ -154,32 +169,21 @@ export function CartPage() {
         <div className="mt-6 space-y-6">
           {cartItems.map((item) => {
             const lineTotal = (item.price ?? 0) * (item.quantity ?? 1);
-            const imageSrc = resolveImageUrl(item.image);
-
             return (
               <div
                 key={item.id}
                 className="flex gap-4 p-4 border border-gray-200 rounded-lg bg-white"
               >
-                {/* Product Image */}
-                <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                  {imageSrc ? (
+                <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded flex items-center justify-center">
+                  {item.image ? (
                     <img
                       src={imageSrc}
                       alt={item.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
+                      className="w-full h-full object-cover rounded"
                     />
-                  ) : null}
-                  <span
-                    className="text-gray-400 text-xs items-center justify-center"
-                    style={{ display: imageSrc ? 'none' : 'flex' }}
-                  >
-                    No Image
-                  </span>
+                  ) : (
+                    <span className="text-gray-400 text-xs">No Image</span>
+                  )}
                 </div>
 
                 {/* Product Details */}
@@ -293,7 +297,7 @@ export function CartPage() {
             </p>
             <button
               type="button"
-              onClick={handleCheckout}
+              onClick={() => navigate('/payment')}
               className="mt-4 w-full px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-900 transition-colors"
             >
               Checkout

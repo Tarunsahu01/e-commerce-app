@@ -38,6 +38,7 @@ public class CouponService {
 		Coupon coupon = new Coupon();
 		coupon.setCode(request.getCode());
 		coupon.setDiscountPercentage(request.getDiscountPercentage());
+		coupon.setMinOrderAmount(request.getMinOrderAmount());
 		coupon.setExpiryDate(request.getExpiryDate());
 		coupon.setCategory(category);
 		coupon.setActive(true);
@@ -73,6 +74,9 @@ public class CouponService {
 		if (request.getDiscountPercentage() != null) {
 			coupon.setDiscountPercentage(request.getDiscountPercentage());
 		}
+		if (request.getMinOrderAmount() != null) {
+			coupon.setMinOrderAmount(request.getMinOrderAmount());
+		}
 		if (request.getActive() != null) {
 			coupon.setActive(request.getActive());
 		}
@@ -97,6 +101,7 @@ public class CouponService {
 		response.setId(coupon.getId());
 		response.setCode(coupon.getCode());
 		response.setDiscountPercentage(coupon.getDiscountPercentage());
+		response.setMinOrderAmount(coupon.getMinOrderAmount());
 		response.setExpiryDate(coupon.getExpiryDate());
 		response.setActive(coupon.isActive());
 		response.setCategoryName(coupon.getCategory().getName());

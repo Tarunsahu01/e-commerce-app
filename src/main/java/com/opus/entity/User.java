@@ -41,10 +41,6 @@ public class User {
 		this.verified = verified;
 	}
 
-	// Getters & Setters
-	
-	
-
 	public Long getId() {
 		return id;
 	}
