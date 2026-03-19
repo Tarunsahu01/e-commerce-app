@@ -23,15 +23,6 @@ export function Layout() {
       easing="ease-out"
       extraScale={1}
     >
-      <div className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
-    </ClickSpark>
-    
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1">
@@ -40,6 +31,7 @@ export function Layout() {
       <Footer />
       <ChatBot />
     </div>
+    </ClickSpark>
     </div>
   );
 }
