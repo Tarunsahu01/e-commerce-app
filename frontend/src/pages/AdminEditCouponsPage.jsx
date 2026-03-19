@@ -30,9 +30,7 @@ export function AdminEditCouponsPage() {
   }, []);
 
   const openEditModal = (coupon) => {
-    setEditingCoupon({
-      ...coupon,
-    });
+    setEditingCoupon({ ...coupon });
   };
 
   const closeEditModal = () => {
@@ -59,8 +57,6 @@ export function AdminEditCouponsPage() {
     if (!editingCoupon) return;
     setSaving(true);
     try {
-      // NOTE: Backend currently exposes only POST/GET for coupons.
-      // This call assumes a future PUT /api/coupons/{id} endpoint.
       await api.put(`/coupons/${editingCoupon.id}`, {
         discountPercentage: editingCoupon.discountPercentage,
         minOrderAmount: Number(editingCoupon.minOrderAmount) || 0,
@@ -107,10 +103,7 @@ export function AdminEditCouponsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {coupons.map((coupon) => (
-                    <tr
-                      key={coupon.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
+                    <tr key={coupon.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3 whitespace-nowrap font-mono text-sm text-gray-900">
                         {coupon.code}
                       </td>
@@ -153,7 +146,7 @@ export function AdminEditCouponsPage() {
                                 await api.delete(`/coupons/${coupon.id}`);
                                 showToast('Coupon deleted successfully', 'success');
                                 fetchCoupons();
-                              } catch (err) {
+                              } catch {
                                 showToast('Failed to delete coupon', 'error');
                               }
                             }}
@@ -172,6 +165,7 @@ export function AdminEditCouponsPage() {
         </div>
       )}
 
+      {/* Edit Modal */}
       {editingCoupon && (
         <div
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm"
@@ -194,18 +188,21 @@ export function AdminEditCouponsPage() {
             </div>
 
             <form onSubmit={handleSave} className="space-y-4">
+
+              {/* Coupon Code — read only */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Coupon Code
                 </label>
                 <input
                   type="text"
-                  name="code"
                   value={editingCoupon.code ?? ''}
                   readOnly
                   className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-800"
                 />
               </div>
+
+              {/* Category — read only */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Category
@@ -217,6 +214,8 @@ export function AdminEditCouponsPage() {
                   className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-800"
                 />
               </div>
+
+              {/* Discount Percentage — editable */}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
                   Discount Value (%)
@@ -232,10 +231,13 @@ export function AdminEditCouponsPage() {
                   required
                 />
               </div>
+
               <div className="flex items-center justify-between gap-4">
+
+                {/* Minimum Order Amount — NOW EDITABLE */}
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Minimum Order Amount
+                    Minimum Order Amount (₹)
                   </label>
                   <input
                     type="number"
@@ -246,6 +248,8 @@ export function AdminEditCouponsPage() {
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:border-black focus:ring-1 focus:ring-black"
                   />
                 </div>
+
+                {/* Status — editable */}
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-600 mb-1">
                     Status
@@ -294,4 +298,3 @@ export function AdminEditCouponsPage() {
     </div>
   );
 }
-

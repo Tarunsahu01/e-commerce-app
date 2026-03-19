@@ -34,6 +34,12 @@ export function AdminDashboard() {
         >
           Manage Coupons
         </Link>
+        <Link
+          to="/admin-dashboard/send-offer-email"
+          className="px-5 py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 transition-colors"
+        >
+          Send Offer Email
+        </Link>
       </div>
     </div>
   );

@@ -34,10 +34,11 @@ public class DataInitializer implements CommandLineRunner {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
+@Override
     public void run(String... args) {
         seedRoles();
         seedAdminUser();
+        seedSampleUsers();
         seedCategories();
         seedProducts();
     }
@@ -65,6 +66,30 @@ public class DataInitializer implements CommandLineRunner {
         admin.setRole(adminRole);
         admin.setVerified(true);
         userRepository.save(admin);
+    }
+
+    private void seedSampleUsers() {
+        if (userRepository.count() > 1) return; // Skip if more than admin
+
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new IllegalStateException("USER role not found"));
+        
+        List<User> sampleUsers = Arrays.asList(
+            createSampleUser("Mr. John Doe", "john@example.com", userRole),
+            createSampleUser("Jane Smith", "jane@example.com", userRole)
+        );
+        userRepository.saveAll(sampleUsers);
+        System.out.println("Seeded sample users.");
+    }
+
+    private User createSampleUser(String name, String email, Role role) {
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode("user123"));
+        user.setRole(role);
+        user.setVerified(true);
+        return user;
     }
 
     private void seedCategories() {

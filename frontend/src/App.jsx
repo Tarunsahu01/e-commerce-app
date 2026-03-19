@@ -26,6 +26,7 @@ import { OrderHistoryPage } from './pages/OrderHistoryPage';
 import { ContactPage } from './pages/ContactPage';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancel from './pages/PaymentCancel';
+import { AdminSendOfferEmailPage } from './pages/AdminSendOfferEmailPage';
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
                   <Route path="add-product" element={<AddProductPage />} />
                   <Route path="create-coupon" element={<CreateCouponPage />} />
                   <Route path="edit-coupons" element={<AdminEditCouponsPage />} />
+                  <Route path="send-offer-email" element={<AdminSendOfferEmailPage />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
