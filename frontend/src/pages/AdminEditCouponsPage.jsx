@@ -59,9 +59,10 @@ export function AdminEditCouponsPage() {
     try {
       await api.put(`/coupons/${editingCoupon.id}`, {
         discountPercentage: editingCoupon.discountPercentage,
-        minOrderAmount: editingCoupon.minOrderAmount === '' ? 0 : Number(editingCoupon.minOrderAmount),
+        minOrderAmount: Number(editingCoupon.minOrderAmount) || 0,
         active: editingCoupon.active,
       });
+      
       showToast('Coupon updated successfully', 'success');
       closeEditModal();
       fetchCoupons();
@@ -74,7 +75,7 @@ export function AdminEditCouponsPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-black">Edit Coupons</h1>
+        <h1 className="text-2xl font-bold text-black">Manage Coupons</h1>
       </div>
 
       {loading && <p className="text-gray-600">Loading coupons...</p>}
@@ -116,10 +117,7 @@ export function AdminEditCouponsPage() {
                         {coupon.discountPercentage != null ? `${coupon.discountPercentage}%` : '—'}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        {/* Now shows real minOrderAmount from backend */}
-                        {coupon.minOrderAmount != null && coupon.minOrderAmount > 0
-                          ? `₹${Number(coupon.minOrderAmount).toLocaleString('en-IN')}`
-                          : 'No minimum'}
+                        {coupon.minOrderAmount != null && coupon.minOrderAmount > 0 ? `₹${Number(coupon.minOrderAmount).toLocaleString('en-IN')}`: '—'}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span
@@ -245,10 +243,8 @@ export function AdminEditCouponsPage() {
                     type="number"
                     name="minOrderAmount"
                     min={0}
-                    step={0.01}
                     value={editingCoupon.minOrderAmount ?? ''}
                     onChange={handleFieldChange}
-                    placeholder="0 = no minimum"
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:border-black focus:ring-1 focus:ring-black"
                   />
                 </div>
