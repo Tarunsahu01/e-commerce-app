@@ -7,11 +7,14 @@
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+
+import { ChatBot } from '../chat/ChatBot';
 import ClickSpark from '../ClickSpark';
 
 export function Layout() {
   return (
-    <ClickSpark
+    <div>
+       <ClickSpark
       sparkColor="#000000"
       sparkSize={10}
       sparkRadius={15}
@@ -28,5 +31,15 @@ export function Layout() {
         <Footer />
       </div>
     </ClickSpark>
+    
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <Footer />
+      <ChatBot />
+    </div>
+    </div>
   );
 }
