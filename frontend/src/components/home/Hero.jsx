@@ -1,6 +1,7 @@
 /**
  * Hero Section on home page to show banners
  */
+/* eslint-disable react/prop-types */
 import { useRef, useState, useEffect } from 'react';
 import VariableProximity from '../VariableProximity';
 
@@ -23,8 +24,18 @@ export function Hero({ products = [] }) {
   }, [featured.length]);
 
   return (
-    <section className="bg-gray-100 border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+    <section className="bg-[#faf0e6] border-b border-[#E5E5E5]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 relative overflow-hidden">
+        {/* Subtle premium overlay */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(600px circle at 20% 10%, rgba(200,169,126,0.18) 0%, rgba(200,169,126,0.00) 60%), radial-gradient(700px circle at 90% 30%, rgba(200,169,126,0.10) 0%, rgba(200,169,126,0.00) 55%)',
+          }}
+        />
+        <div className="relative">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
 
           {/* Left — text */}
@@ -40,7 +51,7 @@ export function Hero({ products = [] }) {
                 falloff="linear"
               />
             </div>
-            <p className="mt-4 text-lg sm:text-xl text-gray-600">
+            <p className="mt-4 text-lg sm:text-xl text-gray-600 leading-relaxed">
               Shop the latest products.
             </p>
           </div>
@@ -54,7 +65,7 @@ export function Hero({ products = [] }) {
                 return (
                   <div
                     key={product.id}
-                    className="absolute w-72 h-96 bg-white rounded-2xl border border-gray-200 overflow-hidden"
+                    className="absolute w-72 h-96 bg-white rounded-2xl border border-[#E5E5E5] overflow-hidden"
                     style={{
                       transition: 'all 0.5s ease',
                       top: `${offset * 12}px`,
@@ -71,7 +82,7 @@ export function Hero({ products = [] }) {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                      <div className="w-full h-full bg-[#faf0e6] flex items-center justify-center text-gray-400 text-sm">
                         No image
                       </div>
                     )}
@@ -81,6 +92,7 @@ export function Hero({ products = [] }) {
             </div>
           )}
 
+        </div>
         </div>
       </div>
     </section>

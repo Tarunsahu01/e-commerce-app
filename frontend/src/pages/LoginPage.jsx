@@ -68,7 +68,7 @@ export function LoginPage() {
       easing="ease-out"
       extraScale={1}
     >
-    <div className="relative min-h-screen w-full bg-white">
+    <div className="relative min-h-screen w-full bg-[#faf0e6]">
       <div className="absolute inset-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
       <div className="relative z-10 flex flex-col items-center justify-start px-4 pt-8">
   
@@ -78,7 +78,7 @@ export function LoginPage() {
           </Link>
         </div>
   
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md card-surface p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Sign in</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -91,7 +91,7 @@ export function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+                className="mt-1 block w-full field-premium"
               />
             </div>
             <div>
@@ -104,16 +104,16 @@ export function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+                className="mt-1 block w-full field-premium"
               />
             </div>
             {error && (
-              <p className="text-sm text-black">{error}</p>
+              <p className="text-sm text-red-600">{error}</p>
             )}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
+              className="w-full btn-primary disabled:opacity-60 disabled:pointer-events-none"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>

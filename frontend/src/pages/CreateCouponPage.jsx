@@ -71,7 +71,7 @@ export function CreateCouponPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto p-8 card-surface">
       <h1 className="text-2xl font-bold text-black mb-6">Create Coupon</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -84,7 +84,7 @@ export function CreateCouponPage() {
             onChange={handleChange}
             required
             placeholder="e.g. SAVE20"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black uppercase"
+            className="mt-1 block w-full field-premium uppercase"
           />
         </div>
         <div>
@@ -102,7 +102,7 @@ export function CreateCouponPage() {
             onChange={handleChange}
             required
             placeholder="20"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
         </div>
         <div>
@@ -118,7 +118,7 @@ export function CreateCouponPage() {
             value={form.minOrderAmount}
             onChange={handleChange}
             placeholder="0"
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
           <p className="mt-1 text-xs text-gray-500">
             Coupon applies only when cart total is at least this amount.
@@ -132,7 +132,7 @@ export function CreateCouponPage() {
             value={form.categoryId}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           >
             <option value="">Select category</option>
             {categories.map((c) => (
@@ -150,14 +150,14 @@ export function CreateCouponPage() {
             onChange={handleChange}
             required
             min={new Date().toISOString().slice(0, 10)}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
         </div>
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="submit"
           disabled={saving}
-          className="w-full py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
+          className="w-full btn-primary disabled:opacity-60 disabled:pointer-events-none"
         >
           {saving ? 'Creating…' : 'Create Coupon'}
         </button>

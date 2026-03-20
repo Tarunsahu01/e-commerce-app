@@ -88,7 +88,7 @@ export function AdminEditCouponsPage() {
       {!loading && !error && coupons.length > 0 && (
         <div className="mt-4 overflow-x-auto">
           <div className="min-w-full inline-block align-middle">
-            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+            <div className="card-surface overflow-hidden">
               <table className="min-w-full text-left text-sm text-gray-700">
                 <thead className="bg-gray-50">
                   <tr>
@@ -103,7 +103,7 @@ export function AdminEditCouponsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {coupons.map((coupon) => (
-                    <tr key={coupon.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={coupon.id} className="hover:bg-[#faf0e6] transition-colors">
                       <td className="px-4 py-3 whitespace-nowrap font-mono text-sm text-gray-900">
                         {coupon.code}
                       </td>
@@ -135,7 +135,7 @@ export function AdminEditCouponsPage() {
                           <button
                             type="button"
                             onClick={() => openEditModal(coupon)}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md bg-black text-white hover:bg-gray-900 transition-colors"
+                            className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-[#C8A97E] text-black hover:bg-[#B8946B] transition-colors"
                           >
                             Edit
                           </button>
@@ -150,7 +150,7 @@ export function AdminEditCouponsPage() {
                                 showToast('Failed to delete coupon', 'error');
                               }
                             }}
-                            className="px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                            className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-[#E5E5E5] text-gray-700 hover:bg-[#faf0e6] transition-colors"
                           >
                             Delete
                           </button>
@@ -172,7 +172,7 @@ export function AdminEditCouponsPage() {
           onClick={closeEditModal}
         >
           <div
-            className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl p-6"
+            className="w-full max-w-lg mx-4 bg-white rounded-2xl shadow-xl border border-[#E5E5E5] p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
@@ -180,7 +180,7 @@ export function AdminEditCouponsPage() {
               <button
                 type="button"
                 onClick={closeEditModal}
-                className="text-gray-500 hover:text-black"
+                className="text-gray-600 hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C8A97E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf0e6] rounded-xl p-2 -m-2 transition-colors"
                 aria-label="Close"
               >
                 ✕
@@ -198,7 +198,7 @@ export function AdminEditCouponsPage() {
                   type="text"
                   value={editingCoupon.code ?? ''}
                   readOnly
-                  className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-800"
+                  className="w-full rounded-xl border border-[#E5E5E5] bg-[#faf0e6] px-4 py-2 text-sm text-gray-800"
                 />
               </div>
 
@@ -211,7 +211,7 @@ export function AdminEditCouponsPage() {
                   type="text"
                   value={editingCoupon.categoryName ?? '—'}
                   readOnly
-                  className="w-full rounded-md border border-gray-300 bg-gray-100 px-3 py-2 text-sm text-gray-800"
+                  className="w-full rounded-xl border border-[#E5E5E5] bg-[#faf0e6] px-4 py-2 text-sm text-gray-800"
                 />
               </div>
 
@@ -227,7 +227,7 @@ export function AdminEditCouponsPage() {
                   max={100}
                   value={editingCoupon.discountPercentage ?? ''}
                   onChange={handleFieldChange}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:border-black focus:ring-1 focus:ring-black"
+                  className="w-full rounded-xl border border-[#E5E5E5] px-4 py-2 text-sm text-gray-800 focus:border-[#C8A97E] focus:ring-2 focus:ring-[#C8A97E]/30 focus:outline-none"
                   required
                 />
               </div>
@@ -245,7 +245,7 @@ export function AdminEditCouponsPage() {
                     min={0}
                     value={editingCoupon.minOrderAmount ?? ''}
                     onChange={handleFieldChange}
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:border-black focus:ring-1 focus:ring-black"
+                    className="w-full rounded-xl border border-[#E5E5E5] px-4 py-2 text-sm text-gray-800 focus:border-[#C8A97E] focus:ring-2 focus:ring-[#C8A97E]/30 focus:outline-none"
                   />
                 </div>
 
@@ -267,7 +267,7 @@ export function AdminEditCouponsPage() {
                         },
                       })
                     }
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:border-black focus:ring-1 focus:ring-black"
+                    className="w-full rounded-xl border border-[#E5E5E5] px-4 py-2 text-sm text-gray-800 focus:border-[#C8A97E] focus:ring-2 focus:ring-[#C8A97E]/30 focus:outline-none"
                   >
                     <option value="true">Active</option>
                     <option value="false">Inactive</option>
@@ -279,14 +279,14 @@ export function AdminEditCouponsPage() {
                 <button
                   type="button"
                   onClick={closeEditModal}
-                  className="px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl border border-[#E5E5E5] text-gray-700 hover:bg-[#faf0e6] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-black text-white hover:bg-gray-900 disabled:opacity-50"
+                  className="px-4 py-2 text-sm font-semibold rounded-xl bg-[#C8A97E] text-black hover:bg-[#B8946B] disabled:opacity-70 disabled:pointer-events-none transition-colors"
                 >
                   {saving ? 'Saving…' : 'Save'}
                 </button>

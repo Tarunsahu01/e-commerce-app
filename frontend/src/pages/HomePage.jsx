@@ -101,7 +101,7 @@ export function HomePage() {
       {/* Only show Hero when not searching */}
       {!searchQuery && <Hero products={products} />}
 
-      <section className="bg-white border-b border-gray-200">
+      <section id="browse" className="bg-[#faf0e6] border-b border-[#E5E5E5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -128,7 +128,7 @@ export function HomePage() {
                   id="category-filter"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="block w-40 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-40 rounded-xl border border-[#E5E5E5] bg-white px-3 py-2 text-sm text-black focus:border-[#C8A97E] focus:outline-none focus:ring-2 focus:ring-[#C8A97E]/30"
                 >
                   {categoryOptions.map((name) => (
                     <option key={name} value={name}>
@@ -145,7 +145,7 @@ export function HomePage() {
                   id="sort-filter"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
-                  className="block w-44 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-black focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                  className="block w-44 rounded-xl border border-[#E5E5E5] bg-white px-3 py-2 text-sm text-black focus:border-[#C8A97E] focus:outline-none focus:ring-2 focus:ring-[#C8A97E]/30"
                 >
                   <option value="none">None</option>
                   <option value="price-asc">Low to High</option>
@@ -172,9 +172,9 @@ export function HomePage() {
           const sorted = sortProducts(groupedByCategory[name]);
           if (!sorted.length) return null;
           return (
-            <section key={name} className="bg-white border-b border-gray-200">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
-                <h3 className="text-2xl font-bold text-black mb-6">{name}</h3>
+            <section key={name} className="bg-[#faf0e6] border-b border-[#E5E5E5]">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-12">
+                <h3 className="text-2xl font-bold text-black mb-6 tracking-tight">{name}</h3>
                 <ProductCarousel
                   products={sorted}
                   onQuickView={setQuickViewProduct}

@@ -81,8 +81,8 @@ export default function PaymentSuccess() {
   const items = Array.isArray(order?.orderItems) ? order.orderItems : [];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="card-surface p-6">
         <div className="flex items-start gap-3">
           <div
             className={[
@@ -153,13 +153,13 @@ export default function PaymentSuccess() {
         <div className="mt-6 flex flex-wrap gap-2">
           <Link
             to="/"
-            className="px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-gray-900 transition-colors"
+            className="btn-primary"
           >
             Continue shopping
           </Link>
           <Link
             to="/orders"
-            className="px-4 py-2 text-sm font-medium text-black border border-black rounded-md hover:bg-gray-100 transition-colors"
+            className="btn-secondary"
           >
             View my orders
           </Link>
