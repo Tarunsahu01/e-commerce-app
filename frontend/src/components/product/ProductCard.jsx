@@ -67,7 +67,7 @@ export function ProductCard({ product, adminMode, onQuickView }) {
   if (adminMode) {
     return (
       <article
-        className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
+        className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow"
         data-product-id={id}
       >
         {ImageBlock}
@@ -91,13 +91,38 @@ export function ProductCard({ product, adminMode, onQuickView }) {
 
   return (
     <article
-      className="flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-1 transition-all"
+      className="group relative flex-shrink-0 w-[190px] sm:w-[210px] bg-white border border-[#E5E5E5] rounded-2xl overflow-hidden shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C8A97E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf0e6]"
       data-product-id={id}
       onClick={() => onQuickView && onQuickView(product)}
       role="button"
       tabIndex={0}
+      aria-label={name ? `Quick view: ${name}` : 'Quick view product'}
+      onKeyDown={(e) => {
+        if (adminMode) return;
+        if (!onQuickView) return;
+        // Avoid triggering quick view when focused on inner controls (e.g., Add to Cart button).
+        if (e.target instanceof HTMLElement && e.target.closest('button')) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onQuickView(product);
+        }
+      }}
     >
       {ImageBlock}
+
+      {/* Hover affordance */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{
+          background: 'linear-gradient(180deg, rgba(200,169,126,0.10) 0%, rgba(200,169,126,0.00) 55%)',
+        }}
+      >
+          <div className="absolute top-3 left-3 rounded-xl px-2.5 py-1 bg-[#faf0e6] border border-[#E5E5E5] text-[11px] font-semibold text-black/80 shadow-sm">
+          Quick view
+        </div>
+      </div>
+
       <div className="p-3">
         <h3 className="text-sm font-medium text-black truncate" title={name}>
           {name || 'Unnamed product'}

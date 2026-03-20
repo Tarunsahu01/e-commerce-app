@@ -78,7 +78,7 @@ public class EmailService {
         email.setFrom("E-commerce website <pranavedu16@gmail.com>");
         email.setTo(to);
         email.setSubject(subject);
-        email.setText("Hello,\\n\\n" + message + "\\n\\nBest regards,\\nE-commerce Team");
+        email.setText("Hello,\n\n" + message + "\n\nBest regards,\nE-commerce Team");
 
         mailSender.send(email);
     }

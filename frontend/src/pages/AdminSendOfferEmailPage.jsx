@@ -31,7 +31,6 @@ export function AdminSendOfferEmailPage() {
       setSubject('');
       setMessage('');
     } catch (error) {
-      setStatus('Failed to send emails. Check console for details.');
       console.error('Send offer error:', error);
     } finally {
       setLoading(false);
@@ -39,11 +38,11 @@ export function AdminSendOfferEmailPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto p-8 card-surface">
       <div className="mb-8">
         <Link
           to="/admin-dashboard"
-          className="inline-flex items-center text-black hover:text-gray-600 text-sm font-medium"
+          className="btn-ghost"
         >
           ← Back to Dashboard
         </Link>
@@ -61,7 +60,7 @@ export function AdminSendOfferEmailPage() {
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent"
+            className="w-full field-premium"
             placeholder="e.g., Summer Sale - 50% Off!"
             required
           />
@@ -76,7 +75,7 @@ export function AdminSendOfferEmailPage() {
             rows={8}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent resize-vertical"
+            className="w-full field-premium resize-vertical"
             placeholder="Write your offer message here..."
             required
           />
@@ -85,14 +84,18 @@ export function AdminSendOfferEmailPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-black text-white py-3 px-6 rounded-md font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full btn-primary disabled:opacity-70 disabled:pointer-events-none transition-colors"
         >
           {loading ? 'Sending...' : 'Send Emails'}
         </button>
       </form>
 
       {status && (
-        <div className={`mt-6 p-4 rounded-md ${status.includes('success') || status.includes('sent') ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}`}>
+        <div
+          className={`mt-6 p-4 rounded-2xl border ${status.includes('success') || status.includes('sent')
+            ? 'bg-green-50 border-green-200 text-green-800'
+            : 'bg-red-50 border-red-200 text-red-800'}`}
+        >
           {status}
         </div>
       )}

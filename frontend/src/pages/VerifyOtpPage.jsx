@@ -43,15 +43,15 @@ export function VerifyOtpPage() {
 	};
 
 	return (
-		<div className="relative min-h-screen w-full bg-white">
-  			<div className="absolute inset-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
-				<div className="relative z-10 flex flex-col items-center justify-start px-4 pt-8">
+		<div className="relative min-h-screen w-full bg-[#faf0e6]">
+			<div className="absolute inset-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
+			<div className="relative z-10 flex flex-col items-center justify-start px-4 pt-8">
 				<div className="w-full max-w-md mb-8">
 					<Link to="/" className="flex justify-center">
 						<span className="text-3xl font-bold tracking-tight text-gray-900">E-Shop</span>
 					</Link>
 				</div>
-				<div className="w-full max-w-md p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+				<div className="w-full max-w-md p-8 card-surface">
 					<h1 className="text-2xl font-bold text-gray-900 mb-2 text-center">
 						Verify Your Email
 					</h1>
@@ -77,7 +77,7 @@ export function VerifyOtpPage() {
 								required
 								maxLength={6}
 								placeholder="000000"
-								className="mt-1 block w-full rounded-xl border border-gray-200 px-4 py-3 text-center text-2xl font-mono tracking-[0.5em] shadow-sm focus:border-black focus:ring-1 focus:ring-black focus:outline-none transition-all"
+								className="mt-1 block w-full rounded-xl border border-[#E5E5E5] px-4 py-3 text-center text-2xl font-mono tracking-[0.5em] shadow-sm focus:border-[#C8A97E] focus:ring-2 focus:ring-[#C8A97E]/30 focus:outline-none transition-all"
 							/>
 						</div>
 
@@ -90,7 +90,7 @@ export function VerifyOtpPage() {
 						<button
 							type="submit"
 							disabled={loading || otp.length < 6}
-							className="w-full py-3 px-4 bg-black text-white font-bold rounded-xl hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
+							className="w-full py-3 px-4 btn-primary disabled:opacity-70 disabled:pointer-events-none transition-all"
 						>
 							{loading ? "Checking Code..." : "Verify & Continue"}
 						</button>

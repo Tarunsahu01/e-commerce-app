@@ -97,7 +97,7 @@ export function EditProductPage() {
 
   if (loading) {
     return (
-      <div className="max-w-xl mx-auto px-4 py-10">
+      <div className="max-w-2xl mx-auto p-8">
         <p className="text-gray-600">Loading...</p>
       </div>
     );
@@ -110,7 +110,7 @@ export function EditProductPage() {
     : null;
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto p-8 card-surface">
       <h1 className="text-2xl font-bold text-black mb-6">Edit Product</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -122,7 +122,7 @@ export function EditProductPage() {
             value={form.name}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
         </div>
 
@@ -136,7 +136,7 @@ export function EditProductPage() {
             value={form.price}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
         </div>
 
@@ -147,7 +147,7 @@ export function EditProductPage() {
             value={form.categoryId}
             onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           >
             <option value="">Select category</option>
             {categories.map((c) => (
@@ -163,7 +163,7 @@ export function EditProductPage() {
             value={form.description}
             onChange={handleChange}
             rows={3}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
         </div>
 
@@ -176,7 +176,7 @@ export function EditProductPage() {
               <img
                 src={currentImageSrc}
                 alt="current"
-                className="w-32 h-32 object-cover rounded-md border border-gray-200"
+                className="w-32 h-32 object-cover rounded-2xl border border-[#E5E5E5]"
               />
             </div>
           )}
@@ -185,7 +185,7 @@ export function EditProductPage() {
             type="file"
             accept="image/*"
             onChange={(e) => setImage(e.target.files[0])}
-            className="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+            className="mt-1 block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#faf0e6] file:text-[#7A5C2E] hover:file:bg-[#faf0e6]"
           />
 
           {image && (
@@ -194,7 +194,7 @@ export function EditProductPage() {
               <img
                 src={URL.createObjectURL(image)}
                 alt="preview"
-                className="w-32 h-32 object-cover rounded-md border border-gray-200"
+                className="w-32 h-32 object-cover rounded-2xl border border-[#E5E5E5]"
               />
             </div>
           )}
@@ -208,7 +208,7 @@ export function EditProductPage() {
             min="1"
             value={form.quantityAvailable}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-black focus:ring-1 focus:ring-black"
+            className="mt-1 block w-full field-premium"
           />
         </div>
 
@@ -225,14 +225,14 @@ export function EditProductPage() {
                 showToast('Failed to delete product', 'error');
               }
             }}
-            className="px-4 py-2 text-sm font-medium rounded-md border border-red-600 text-red-700 hover:bg-red-50"
+            className="px-4 py-2 text-sm font-semibold rounded-xl border border-red-200 bg-white text-red-700 hover:bg-red-50 transition-colors"
           >
             Delete Product
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
+            className="flex-1 py-2 px-4 btn-primary disabled:opacity-70 disabled:pointer-events-none"
           >
             {saving ? 'Saving…' : 'Save Changes'}
           </button>

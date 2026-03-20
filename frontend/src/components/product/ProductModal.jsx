@@ -45,8 +45,11 @@ export function ProductModal({ product, onClose }) {
       onClick={handleOverlayClick}
     >
       <div
-        className="max-w-3xl w-full mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden"
+        className="max-w-3xl w-full mx-4 bg-white rounded-2xl shadow-xl overflow-hidden border border-[#E5E5E5] focus:outline-none"
         onClick={stopPropagation}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Product details"
       >
         <div className="flex justify-between items-start px-6 pt-5 pb-2">
           <h2 className="text-xl font-semibold text-black truncate pr-6">
@@ -55,7 +58,7 @@ export function ProductModal({ product, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 hover:text-black transition-colors"
+            className="text-gray-600 hover:text-black transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C8A97E] focus-visible:ring-offset-2 focus-visible:ring-offset-[#faf0e6] rounded-xl p-2 -m-2"
             aria-label="Close"
           >
             ✕
@@ -64,7 +67,7 @@ export function ProductModal({ product, onClose }) {
 
         <div className="px-6 pb-6 pt-2 flex flex-col md:flex-row gap-6">
           <div className="md:w-1/2">
-            <div className="aspect-[4/5] bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden">
+            <div className="aspect-[4/5] bg-[#faf0e6] border border-[#E5E5E5] rounded-2xl flex items-center justify-center overflow-hidden">
               {imageUrl ? (
                 <img
                   src={imageUrl}

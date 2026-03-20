@@ -111,13 +111,18 @@ export function Navbar() {
           margin: scrolled ? '12px auto' : '0 auto',
           maxWidth: scrolled ? '680px' : '100%',
           borderRadius: scrolled ? '9999px' : '0px',
+          // Warm, translucent overlay so the navbar blends with beige pages.
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           // ✅ Always gradient — no white blink on transition
           background: scrolled
-            ? 'linear-gradient(135deg, #222 0%, #111 50%, #222 100%)'
-            : 'linear-gradient(135deg, #000 0%, #000 50%, #000 100%)',
-          border: scrolled ? '1px solid #333' : 'none',
-          borderBottom: scrolled ? '1px solid #333' : '1px solid #222',
-          boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.4)' : 'none',
+            ? 'radial-gradient(900px circle at 10% -20%, rgba(200,169,126,0.28) 0%, rgba(200,169,126,0) 55%), linear-gradient(135deg, rgba(25,25,25,0.88) 0%, rgba(10,10,10,0.88) 50%, rgba(25,25,25,0.88) 100%)'
+            : 'radial-gradient(900px circle at 20% -30%, rgba(200,169,126,0.16) 0%, rgba(200,169,126,0) 60%), linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.72) 100%)',
+          border: scrolled ? '1px solid rgba(229,229,229,0.22)' : 'none',
+          borderBottom: scrolled ? '1px solid rgba(229,229,229,0.22)' : '1px solid rgba(229,229,229,0.14)',
+          boxShadow: scrolled
+            ? '0 10px 34px rgba(0,0,0,0.42), 0 0 0 1px rgba(250,240,230,0.06)'
+            : 'none',
           // ✅ Explicit background transition to prevent blink
           transition: 'margin 0.5s ease, max-width 0.5s ease, border-radius 0.5s ease, background 0.5s ease, box-shadow 0.5s ease, border 0.5s ease',
         }}
@@ -214,14 +219,19 @@ export function Navbar() {
                           </button>
                         ))}
                         <div className="px-4 py-2" style={{ borderTop: '1px solid #222' }}>
-                          <button type="button" onClick={handleSearchSubmit} className="text-xs" style={{ color: '#888' }}>
-                            See all results for "{searchQuery}"
+                          <button
+                            type="button"
+                            onClick={handleSearchSubmit}
+                            className="text-xs"
+                            style={{ color: '#888' }}
+                          >
+                            See all results for &quot;{searchQuery}&quot;
                           </button>
                         </div>
                       </>
                     ) : (
                       <div className="px-4 py-3 text-sm" style={{ color: '#888' }}>
-                        No products found for "{searchQuery}"
+                        No products found for &quot;{searchQuery}&quot;
                       </div>
                     )}
                   </div>

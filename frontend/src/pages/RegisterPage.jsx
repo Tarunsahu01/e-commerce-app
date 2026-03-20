@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
-import { useAuth } from '../context/AuthContext';
 
 export function RegisterPage() {
   const [name, setName] = useState('');
@@ -12,7 +11,6 @@ export function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -35,7 +33,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-white">
+    <div className="relative min-h-screen w-full bg-[#faf0e6]">
       <div className="absolute inset-0 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"></div>
       <div className="relative z-10 flex flex-col items-center justify-start px-4 pt-8">
       <div className="w-full max-w-md mb-8">
@@ -43,7 +41,7 @@ export function RegisterPage() {
           <span className="text-3xl font-bold tracking-tight text-gray-900">E-Shop</span>
         </Link>
       </div>
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md card-surface p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Create account</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -56,7 +54,7 @@ export function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+              className="mt-1 block w-full field-premium"
             />
           </div>
           <div>
@@ -69,7 +67,7 @@ export function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+              className="mt-1 block w-full field-premium"
             />
           </div>
           <div>
@@ -83,16 +81,16 @@ export function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:ring-1 focus:ring-black focus:outline-none"
+              className="mt-1 block w-full field-premium"
             />
           </div>
           {error && (
-            <p className="text-sm text-black">{error}</p>
+            <p className="text-sm text-red-600">{error}</p>
           )}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-black text-white font-medium rounded-md hover:bg-gray-800 disabled:opacity-50"
+            className="w-full btn-primary disabled:opacity-60 disabled:pointer-events-none"
           >
             {loading ? 'Creating account...' : 'Register'}
           </button>
