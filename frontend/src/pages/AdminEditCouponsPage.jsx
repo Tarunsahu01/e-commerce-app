@@ -147,7 +147,7 @@ export function AdminEditCouponsPage() {
                                 showToast('Coupon deleted successfully', 'success');
                                 fetchCoupons();
                               } catch {
-                                showToast('Failed to delete coupon', 'error');
+                                showToast('Order already placed using this coupon.', 'error');
                               }
                             }}
                             className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-[#E5E5E5] text-gray-700 hover:bg-[#faf0e6] transition-colors"

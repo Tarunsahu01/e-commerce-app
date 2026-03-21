@@ -1,12 +1,9 @@
-/**
- * App: Minimal routes - Home, Cart, Login, Register, Admin (protected).
- */
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { SearchProvider } from './context/SearchContext';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { UserOnlyRoute } from './components/UserOnlyRoute'; 
 import { Layout } from './components/layout/Layout';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { AdminRoute } from './components/AdminRoute';
@@ -38,14 +35,15 @@ function App() {
               <Routes>
                 <Route element={<Layout />}>
                   <Route path="/" element={<HomePage />} />
-                  <Route path="/cart" element={<CartPage />} />
-                  <Route path="/payment" element={<ProtectedRoute><PaymentPage /></ProtectedRoute>} />
-                  <Route path="/orders" element={<OrderHistoryPage />} />
                   <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
-                  <Route path="/payment-cancel" element={<ProtectedRoute><PaymentCancel /></ProtectedRoute>} />
-                </Route>
 
+                  <Route path="/cart" element={<UserOnlyRoute><CartPage /></UserOnlyRoute>} />
+                  <Route path="/payment" element={<UserOnlyRoute><PaymentPage /></UserOnlyRoute>} />
+                  <Route path="/orders" element={<UserOnlyRoute><OrderHistoryPage /></UserOnlyRoute>} />
+                  <Route path="/payment-success" element={<UserOnlyRoute><PaymentSuccess /></UserOnlyRoute>} />
+                  <Route path="/payment-cancel" element={<UserOnlyRoute><PaymentCancel /></UserOnlyRoute>} />
+
+                </Route>
 
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -67,6 +65,7 @@ function App() {
                   <Route path="edit-coupons" element={<AdminEditCouponsPage />} />
                   <Route path="send-offer-email" element={<AdminSendOfferEmailPage />} />
                 </Route>
+
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </ToastProvider>
