@@ -1,7 +1,3 @@
-/**
- * AdminNavbar: Header for admin area — no cart icon, no cart features.
- * Shows E-Shop, link to Admin Dashboard, and user menu (Logout).
- */
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -17,94 +13,102 @@ export function AdminNavbar() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
-        setUsername('');
-        return;
-      }
+      if (!token) { setUsername(''); return; }
       try {
         const { data } = await api.get('/auth/me');
         setUsername(data?.name ?? '');
-      } catch {
-        setUsername('');
-      }
+      } catch { setUsername(''); }
     };
-    if (isAuthenticated) {
-      fetchUserProfile();
-    } else {
-      setUsername('');
-    }
+    if (isAuthenticated) fetchUserProfile();
+    else setUsername('');
   }, [isAuthenticated]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(event.target)) setOpen(false);
     };
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    if (open) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
 
-  const handleLogout = () => {
-    setOpen(false);
-    logout();
-    navigate('/');
-  };
+  const handleLogout = () => { setOpen(false); logout(); navigate('/'); };
 
   return (
-    <header className="bg-[#faf0e6] border-b border-[#E5E5E5]">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <Link to="/admin-dashboard" className="text-xl font-bold text-black">
+    <header
+      className="sticky top-0 z-50 w-full"
+      style={{
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        background: 'radial-gradient(900px circle at 20% -30%, rgba(200,169,126,0.16) 0%, rgba(200,169,126,0) 60%), linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.72) 50%, rgba(0,0,0,0.72) 100%)',
+        borderBottom: '1px solid rgba(229,229,229,0.14)',
+      }}
+    >
+      <nav style={{ padding: '0 32px' }}>
+        <div className="flex justify-between items-center gap-4" style={{ height: '72px' }}>
+
+          {/* Logo */}
+          <Link
+            to="/admin-dashboard"
+            className="font-bold flex-shrink-0 text-white"
+            style={{ fontSize: '1.25rem' }}
+          >
             E-Shop Admin
           </Link>
 
-          <div className="flex items-center gap-2" ref={menuRef}>
+          {/* Right side */}
+          <div className="flex items-center gap-3 flex-shrink-0" ref={menuRef}>
             <Link
               to="/admin-dashboard"
-              className="px-4 py-2 text-sm font-semibold text-black border border-[#E5E5E5] rounded-xl hover:bg-[#faf0e6] transition-colors"
+              className="px-4 py-1.5 text-sm font-medium rounded-full transition-colors"
+              style={{ color: '#000', backgroundColor: '#fff', border: '1px solid #fff' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#e5e5e5'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#fff'}
             >
-              Admin Dashboard
+              Dashboard
             </Link>
+
             {isAuthenticated && (
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setOpen((prev) => !prev)}
-                  className="p-2 rounded-md text-black hover:bg-gray-100"
+                  className="p-2 rounded-full transition-colors"
+                  style={{ color: '#fff' }}
+                  onMouseEnter={e => e.currentTarget.style.backgroundColor = '#2a2a2a'}
+                  onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                   aria-label="User menu"
                   aria-expanded={open}
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 </button>
+
                 {open && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white border border-[#E5E5E5] rounded-2xl shadow-lg overflow-hidden z-50">
-                    <div className="px-4 py-3 border-b border-[#E5E5E5]">
+                  <div
+                    className="absolute right-0 mt-2 w-56 rounded-xl overflow-hidden z-50"
+                    style={{
+                      backgroundColor: '#111',
+                      border: '1px solid #333',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    }}
+                  >
+                    <div className="px-4 py-3" style={{ borderBottom: '1px solid #222' }}>
                       {username && (
                         <>
-                          <p className="text-xs text-gray-600">Welcome!</p>
-                          <p className="text-sm font-medium text-black truncate">{username}</p>
+                          <p className="text-xs" style={{ color: '#888' }}>Welcome!</p>
+                          <p className="text-sm font-medium truncate" style={{ color: '#fff' }}>{username}</p>
                         </>
                       )}
                     </div>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm font-semibold text-black hover:bg-[#faf0e6] border-t border-[#E5E5E5]"
+                      className="block w-full text-left px-4 py-2 text-sm transition-colors"
+                      style={{ color: '#fff', borderTop: '1px solid #222' }}
+                      onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1a1a1a'}
+                      onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       Logout
                     </button>
