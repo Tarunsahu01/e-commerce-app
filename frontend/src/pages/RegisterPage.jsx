@@ -1,8 +1,9 @@
 /**
  * RegisterPage: Form for POST /auth/register.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
 
 export function RegisterPage() {
@@ -12,7 +13,19 @@ export function RegisterPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth();
 
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const role = user?.role ?? localStorage.getItem('role');
+    if (role === 'ADMIN' || role === 'admin') {
+      navigate('/admin-dashboard', { replace: true });
+    } else {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, user?.role, navigate]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);

@@ -1,16 +1,28 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
+import { useAuth } from '../context/AuthContext';
 
 export function VerifyOtpPage() {
 	const [otp, setOtp] = useState("");
 	const [loading, setLoading] = useState(false);
+	
 	const [error, setError] = useState(null);
 
 	const location = useLocation();
 	const navigate = useNavigate();
-
+	const { isAuthenticated, user } = useAuth();
 	const email = location.state?.email;
+
+	useEffect(() => {
+		if (!isAuthenticated) return;
+		const role = user?.role ?? localStorage.getItem('role');
+		if (role === 'ADMIN' || role === 'admin') {
+		  navigate('/admin-dashboard', { replace: true });
+		} else {
+		  navigate('/', { replace: true });
+		}
+	}, [isAuthenticated, user?.role, navigate]);
 
 	useEffect(() => {
 		if (!email) {
