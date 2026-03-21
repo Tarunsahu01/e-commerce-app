@@ -28,97 +28,84 @@ import com.opus.service.ProductService;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final ProductService productService;
+	private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+	public ProductController(ProductService productService) {
+		this.productService = productService;
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(consumes = "multipart/form-data")
-    public ProductResponse createProduct(
-            @RequestParam String name,
-            @RequestParam String description,
-            @RequestParam Double price,
-            @RequestParam Integer quantityAvailable,
-            @RequestParam Long categoryId,
-            @RequestParam(required = false) MultipartFile image
-    ) throws IOException {
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping(consumes = "multipart/form-data")
+	public ProductResponse createProduct(@RequestParam String name, @RequestParam String description,
+			@RequestParam Double price, @RequestParam Integer quantityAvailable, @RequestParam Long categoryId,
+			@RequestParam(required = false) MultipartFile image) throws IOException {
 
-        String imageUrl = null;
+		String imageUrl = null;
 
-        if (image != null && !image.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            Path uploadPath = Paths.get("uploads");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Files.write(uploadPath.resolve(fileName), image.getBytes());
-            imageUrl = "/uploads/" + fileName;
-        }
+		if (image != null && !image.isEmpty()) {
+			imageUrl = productService.uploadImage(image);
+		}
 
-        ProductRequest request = new ProductRequest();
-        request.setName(name);
-        request.setDescription(description);
-        request.setPrice(price);
-        request.setQuantityAvailable(quantityAvailable);
-        request.setCategoryId(categoryId);
-        request.setImageUrl(imageUrl);
+		ProductRequest request = new ProductRequest();
+		request.setName(name);
+		request.setDescription(description);
+		request.setPrice(price);
+		request.setQuantityAvailable(quantityAvailable);
+		request.setCategoryId(categoryId);
+		request.setImageUrl(imageUrl);
 
-        return productService.createProduct(request);
-    }
+		return productService.createProduct(request);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
-    public ProductResponse updateProduct(
-            @PathVariable Long id,
-            @RequestParam String name,
-            @RequestParam String description,
-            @RequestParam Double price,
-            @RequestParam Integer quantityAvailable,
-            @RequestParam Long categoryId,
-            @RequestParam(required = false) MultipartFile image
-    ) throws IOException {
+	@PreAuthorize("hasRole('ADMIN')")
+	@PutMapping(value = "/{id}", consumes = "multipart/form-data")
+	public ProductResponse updateProduct(@PathVariable Long id, @RequestParam String name,
+			@RequestParam String description, @RequestParam Double price, @RequestParam Integer quantityAvailable,
+			@RequestParam Long categoryId, @RequestParam(required = false) MultipartFile image) throws IOException {
 
-        // First get existing product to preserve old image if no new one uploaded
-        Product existing = productService.getProductById(id);
-        String imageUrl = existing.getImageUrl(); // keep existing image by default
+		Product existing = productService.getProductById(id);
+		String imageUrl = existing.getImageUrl();
 
-        if (image != null && !image.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            Path uploadPath = Paths.get("uploads");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Files.write(uploadPath.resolve(fileName), image.getBytes());
-            imageUrl = "/uploads/" + fileName;
-        }
+		if (image != null && !image.isEmpty()) {
+			if (existing.getImageUrl() != null) {
+				productService.deleteImage(existing.getImageUrl());
+			}
 
-        ProductRequest request = new ProductRequest();
-        request.setName(name);
-        request.setDescription(description);
-        request.setPrice(price);
-        request.setQuantityAvailable(quantityAvailable);
-        request.setCategoryId(categoryId);
-        request.setImageUrl(imageUrl);
+			imageUrl = productService.uploadImage(image);
+		}
 
-        return productService.updateProduct(id, request);
-    }
+		ProductRequest request = new ProductRequest();
+		request.setName(name);
+		request.setDescription(description);
+		request.setPrice(price);
+		request.setQuantityAvailable(quantityAvailable);
+		request.setCategoryId(categoryId);
+		request.setImageUrl(imageUrl);
 
-    @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
-    }
+		return productService.updateProduct(id, request);
+	}
 
-    @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
-    }
+	@GetMapping
+	public List<Product> getAllProducts() {
+		return productService.getAllProducts();
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.ok("Product deleted successfully");
-    }
+	@GetMapping("/{id}")
+	public Product getProductById(@PathVariable Long id) {
+		return productService.getProductById(id);
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+		Product product = productService.getProductById(id);
+
+		if (product.getImageUrl() != null) {
+			productService.deleteImage(product.getImageUrl());
+		}
+
+		productService.deleteProduct(id);
+
+		return ResponseEntity.ok("Product deleted successfully");
+	}
 }
