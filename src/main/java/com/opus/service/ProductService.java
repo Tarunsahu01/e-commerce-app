@@ -115,4 +115,5 @@ public class ProductService {
 			System.out.println("Cloudinary delete failed: " + e.getMessage());
 		}
 	}
+
 }
