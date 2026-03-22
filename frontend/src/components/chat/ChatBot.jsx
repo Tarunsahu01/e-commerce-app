@@ -151,6 +151,7 @@ export function ChatBot() {
     } else if (lower.includes('home') || lower.includes('browse')) {
       setTimeout(() => navigate('/'), 1200);
     }
+
   };
 
   const handleSend = async () => {

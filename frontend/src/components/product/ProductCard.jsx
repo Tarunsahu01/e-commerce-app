@@ -139,6 +139,7 @@ export function ProductCard({ product, adminMode, onQuickView }) {
             className="w-full text-xs py-1.5 px-2 rounded border border-black text-black hover:bg-gray-100 transition-colors disabled:opacity-50"
           >
             {adding ? 'Adding…' : 'Add to Cart'}
+          
           </button>
         </div>
       </div>

@@ -210,7 +210,7 @@ export function CartPage() {
                       </button>
                     </div>
                     <p className="mt-2 text-sm font-semibold text-black">
-                      Line total: ₹{lineTotal.toLocaleString('en-IN')}
+                      Product total: ₹{lineTotal.toLocaleString('en-IN')}
                     </p>
                   </div>
                 </div>

@@ -64,7 +64,6 @@
 			<groupId>com.stripe</groupId>
 			<artifactId>stripe-java</artifactId>
 			<version>24.3.0-beta.1</version>
-			<optional>true</optional>
 		</dependency>
 		
 		<dependency>
